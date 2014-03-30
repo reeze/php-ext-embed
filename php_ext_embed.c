@@ -23,6 +23,8 @@
 #include <mach-o/getsect.h>
 #endif
 
+#include <Zend/zend_compile.h>
+#include <Zend/zend_execute.h>
 #include <Zend/zend_stream.h>
 
 #include "php_ext_embed.h"

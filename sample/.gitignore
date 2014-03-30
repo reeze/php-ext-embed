@@ -1,2 +1,3 @@
 *.o
 config.h
+php_ext_embed_lib_files.h

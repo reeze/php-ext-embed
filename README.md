@@ -27,8 +27,7 @@ $ # add your logic
 
 ## Limitations
 
-1. You could only embed *single* php file for now. multiple files support
-coming soon.
+1. Lib files could only be in same folder for now
 1. It works for \*Nix for now, Windows is not supported yet
 
 

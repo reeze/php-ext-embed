@@ -22,9 +22,12 @@
 #include "config.h"
 #endif
 
-#include "php.h"
-#include "ext/standard/info.h"
-#include "php_ext_embed.h"
+#include <php.h>
+#include <ext/standard/info.h>
+#include <php_ext_embed.h>
+
+/* */
+#include "php_ext_embed_lib_files.h"
 
 #ifndef PHP_FE_END
 # define PHP_FE_END { NULL, NULL, NULL, 0, 0 }
@@ -64,13 +67,14 @@ ZEND_GET_MODULE(sample)
 
 PHP_RINIT_FUNCTION(sample)
 {
-	PHP_EXT_EMBED_INCLUDE_FILES(sample);
+	PHP_EXT_EMBED_RINIT(sample);
 
 	return SUCCESS;
 }
 
 PHP_RSHUTDOWN_FUNCTION(sample)
 {
+	PHP_EXT_EMBED_RSHUTDOWN(sample);
 	return SUCCESS;
 }
 
@@ -78,7 +82,7 @@ PHP_RSHUTDOWN_FUNCTION(sample)
  */
 PHP_MINIT_FUNCTION(sample)
 {
-	PHP_EXT_EMBED_STARTUP(sample);
+	PHP_EXT_EMBED_MINIT(sample);
 
 	return SUCCESS;
 }
@@ -88,7 +92,7 @@ PHP_MINIT_FUNCTION(sample)
  */
 PHP_MSHUTDOWN_FUNCTION(sample)
 {
-	PHP_EXT_EMBED_STUTDOWN(sample);
+	PHP_EXT_EMBED_MSTUTDOWN(sample);
 
     return SUCCESS;
 }
