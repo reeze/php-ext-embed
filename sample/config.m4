@@ -13,9 +13,12 @@ if test "$PHP_SAMPLE" != "no"; then
   dnl TODO add toggle to disable embed Lib
   dnl Init php ext embed
   PHP_EXT_EMBED_INIT()
-  PHP_ADD_INCLUDE($PHP_EXT_EMBED_DIR)
   
   PHP_SUBST(SAMPLE_SHARED_LIBADD)
+
+  dnl php libs will be auto included in the order added
   PHP_EXT_EMBED_ADD_LIB(sample, [lib/*.php])
-  PHP_NEW_EXTENSION(sample, [sample.c $PHP_EXT_EMBED_DIR/php_ext_embed.c], $ext_shared)
+
+  dnl add php_ext_embed.c to build to support php lib embed
+  PHP_EXT_EMBED_NEW_EXTENSION(sample, [sample.c], $ext_shared)
 fi

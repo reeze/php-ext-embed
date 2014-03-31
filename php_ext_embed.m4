@@ -6,6 +6,36 @@ dnl
 
 ext_embed_files_header=ext_embed_libs.h
 
+AC_DEFUN([PHP_EXT_EMBED_CHECK_VALID],[
+  if test "$PHP_EXT_EMBED_DIR" = ""; then
+    AC_MSG_ERROR([PHP_EXT_EMBED_DIR is not set])
+  fi
+])
+
+
+dnl
+dnl PHP_EXT_EMBED_NEW_EXTENSION(extname, sources [, shared [, sapi_class [, extra-cflags [, cxx [, zend_ext]]]]])
+dnl
+dnl Includes an extension in the build.
+dnl 
+dnl It is a wrapper for PHP_NEW_EXTENSION to inculude php_ext_embed.c
+dnl
+dnl "extname" is the name of the ext/ subdir where the extension resides.
+dnl "sources" is a list of files relative to the subdir which are used
+dnl to build the extension.
+dnl "shared" can be set to "shared" or "yes" to build the extension as
+dnl a dynamically loadable library. Optional parameter "sapi_class" can
+dnl be set to "cli" to mark extension build only with CLI or CGI sapi's.
+dnl "extra-cflags" are passed to the compiler, with 
+dnl @ext_srcdir@ and @ext_builddir@ being substituted.
+dnl "cxx" can be used to indicate that a C++ shared module is desired.
+dnl "zend_ext" indicates a zend extension.
+AC_DEFUN([PHP_EXT_EMBED_NEW_EXTENSION],[
+  PHP_EXT_EMBED_CHECK_VALID()
+
+  PHP_NEW_EXTENSION($1, [$2 $PHP_EXT_EMBED_DIR/php_ext_embed.c], $3, $4, $5, $6, $7)
+])
+
 dnl
 dnl PHP_EXT_EMBED_INIT(extname)
 dnl
@@ -13,10 +43,7 @@ dnl check dependencies
 dnl
 dnl "extname" is the name of the ext/ subdir where the extension resides.
 AC_DEFUN([PHP_EXT_EMBED_INIT],[
-  AC_MSG_CHECKING([whether PHP_EXT_EMBED_DIR is set])
-  if test "$PHP_EXT_EMBED_DIR" = ""; then
-    AC_MSG_ERROR([PHP_EXT_EMBED_DIR is not set])
-  fi
+  PHP_EXT_EMBED_CHECK_VALID()
 
   AC_MSG_CHECKING([whether php_ext_embed_dir is correct])
   if test -f "$PHP_EXT_EMBED_DIR/php_ext_embed.h"; then
@@ -24,6 +51,8 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
   else
     AC_MSG_ERROR([php_ext_embed.h is not exist])
   fi
+
+  PHP_ADD_INCLUDE($PHP_EXT_EMBED_DIR)
  
   dnl TODO Checking libelf? and add libs
   AC_MSG_CHECKING([whether libelf is found])
