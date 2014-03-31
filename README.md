@@ -1,11 +1,11 @@
-php-embed
+php-ext-embed
 =============
 
-Build Status: [![Build Status](https://secure.travis-ci.org/reeze/php-embed.png)](http://travis-ci.org/reeze/php-ext-embed)
+Build Status: [![Build Status](https://secure.travis-ci.org/reeze/php-ext-embed.png)](http://travis-ci.org/reeze/php-ext-embed)
 
 *Mix it up with PHP and C*
 
-`php-embed` is a tool which help you to build php extension
+`php-ext-embed` is a tool which help you to build php extension
 with both `PHP` and `C` by embed your php lib right inside your
 extension.
 
@@ -17,12 +17,12 @@ with `PHP`, you got a single extension file without dependency.
 
 ## How?
 
-1. Download php-embed
+1. Download php-ext-embed
 1. generate your extension skeleton
 
 ```
-$ cd php-embed
-$ bin/php-embed --ext=myext
+$ cd php-ext-embed
+$ bin/php-ext-embed --ext=myext
 $ cd myext
 $ # add your logic
 ```
