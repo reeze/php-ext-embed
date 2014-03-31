@@ -58,3 +58,14 @@ want_dependencies
 x64
 stamp-h.in
 scan_makefile_in.awk
+.deps
+Makefile
+Makefile.fragments
+Makefile.global
+Makefile.objects
+acinclude.m4
+build/
+configure.in
+ltmain.sh
+run-tests.php
+sample.loT

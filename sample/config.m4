@@ -13,6 +13,7 @@ if test "$PHP_SAMPLE" != "no"; then
   dnl TODO add toggle to disable embed Lib
   dnl Init php ext embed
   PHP_EXT_EMBED_INIT()
+  PHP_ADD_INCLUDE($PHP_EXT_EMBED_DIR)
   
   PHP_SUBST(SAMPLE_SHARED_LIBADD)
   PHP_EXT_EMBED_ADD_LIB(sample, [lib/sample.php])
