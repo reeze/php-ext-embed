@@ -16,6 +16,6 @@ if test "$PHP_SAMPLE" != "no"; then
   PHP_ADD_INCLUDE($PHP_EXT_EMBED_DIR)
   
   PHP_SUBST(SAMPLE_SHARED_LIBADD)
-  PHP_EXT_EMBED_ADD_LIB(sample, [lib/sample.php])
+  PHP_EXT_EMBED_ADD_LIB(sample, [lib/*.php])
   PHP_NEW_EXTENSION(sample, [sample.c $PHP_EXT_EMBED_DIR/php_ext_embed.c], $ext_shared)
 fi

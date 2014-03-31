@@ -5,7 +5,7 @@ Build Status: [![Build Status](https://secure.travis-ci.org/reeze/php-ext-embed.
 
 *Mix it up with PHP and C*
 
-`php-ext-embed` is a tool which help you to build php extension
+`php-ext-embed` is a tool which help you build php extension
 with both `PHP` and `C` by embed your php lib right inside your
 extension.
 
@@ -26,6 +26,10 @@ $ bin/php-ext-embed --ext=myext
 $ cd myext
 $ # add your logic
 ```
+
+## Dependency
+
+1. libelf on *Nix
 
 ## Limitations
 
