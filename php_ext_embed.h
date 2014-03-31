@@ -21,13 +21,13 @@
 #ifndef _PHP_EXT_EMBED_H_
 #define _PHP_EXT_EMBED_H_
 
-#define PHP_EXT_EMBED_MINIT(extname)			php_embed_startup(##extname)
-#define PHP_EXT_EMBED_RINIT(extname)			php_embed_do_include_files(##extname)
+#define PHP_EXT_EMBED_MINIT(extname)			php_embed_startup(#extname, ext_##extname##_embed_files)
+#define PHP_EXT_EMBED_RINIT(extname)			php_embed_do_include_files(#extname, ext_##extname##_embed_files)
 #define PHP_EXT_EMBED_RSHUTDOWN(extname)
-#define PHP_EXT_EMBED_MSTUTDOWN(extname)		php_embed_shutdown(##extname)
+#define PHP_EXT_EMBED_MSTUTDOWN(extname)		php_embed_shutdown(#extname, ext_##extname##_embed_files)
 
-int php_embed_startup(const char *extname);
-int php_embed_do_include_files(const char *extname);
-int php_embed_shutdown(const char *extname);
+int php_embed_startup(const char *extname, const char **embed_files);
+int php_embed_do_include_files(const char *extname, const char **embed_files);
+int php_embed_shutdown(const char *extname, const char**embed_files);
 
 #endif
