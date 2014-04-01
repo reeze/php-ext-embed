@@ -86,7 +86,7 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
 	  dummy_filename="extension://$1/$ac_src"
 	  dnl TODO Linux
 	  MD5=md5
-	  section_name=ext_`echo $dummy_filename | $MD5`
+	  section_name=ext.`echo $dummy_filename | $MD5`
 	  section_name=${section_name:0:16}
       echo "\t{"						>> $ext_embed_files_header
 	  echo "\t\t\"$ac_src\"",			>> $ext_embed_files_header
