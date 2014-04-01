@@ -34,6 +34,15 @@ AC_DEFUN([PHP_EXT_EMBED_NEW_EXTENSION],[
   PHP_EXT_EMBED_CHECK_VALID()
 
   PHP_NEW_EXTENSION($1, [$2 $PHP_EXT_EMBED_DIR/php_ext_embed.c], $3, $4, $5, $6, $7)
+
+  case $host_alias in
+    *linux*[)]
+      dnl FIXME tricky way to add custom command after build for Linux
+      cat >>Makefile.objects<<EOF
+	objcopy $php_ext_embed_libs $phplibdir/$1.so
+EOF
+      ;;
+  esac
 ])
 
 dnl
@@ -80,13 +89,21 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
   echo ""											>> $ext_embed_files_header
   echo "php_ext_lib_entry ext_$1_embed_files[[]] = {"		>> $ext_embed_files_header
 
-  PHP_SUBST(EXTRA_CFLAGS)
+  php_ext_embed_libs=
+  case $host_alias in
+    *darwin*[)]
+      MD5_CMD=md5
+      ;;
+	*[)]
+      MD5_CMD=md5sum
+      ;;
+  esac
+
   for ac_src in $2; do
     if test -f "$ac_src"; then
 	  dummy_filename="extension://$1/$ac_src"
 	  dnl TODO Linux
-	  MD5=md5
-	  section_name=ext.`echo $dummy_filename | $MD5`
+	  section_name=ext.`echo $dummy_filename | $MD5_CMD`
 	  section_name=${section_name:0:16}
       echo "\t{"						>> $ext_embed_files_header
 	  echo "\t\t\"$ac_src\"",			>> $ext_embed_files_header
@@ -96,7 +113,16 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
       PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"
 	  shared_objects_$1="$shared_objects_$1 $ac_src"
 
-	  EXTRA_CFLAGS="$EXTRA_CFLAGS -Wl,-sectcreate,__text,${section_name},${ac_src}"
+	  case $host_alias in
+	  	*darwin*[)]
+		  dnl Tricky way. There is no way to hook it link stage :(
+		  dnl so there are warnings when compile with mac
+		  LDFLAGS="$LDFLAGS -Wl,-sectcreate,__text,${section_name},${ac_src}"
+	  	;;
+	  	*[)]
+		  php_ext_embed_libs="$php_ext_embed_libs --add-section "${section_name}=${ac_src}""
+	  	;;
+	  esac
 	else
 	  AC_MSG_WARN([lib file $ac_src not found, ignored])
 	fi
@@ -105,8 +131,4 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
   echo "};"											>> $ext_embed_files_header
   echo ""											>> $ext_embed_files_header
   echo "#endif"										>> $ext_embed_files_header
-
-  dnl embed php files to target
-
-
 ])
