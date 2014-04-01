@@ -31,14 +31,22 @@
 
 typedef struct _embed_handle {
 	FILE *fp;
-	offset_t offset;
-} embed_handle;
+	off_t offset;
+	size_t length;
+} ext_embed_handle;
 
+/*
 static zend_mmap get_embed_handle(char *extname)
 {
-
+	return {};
 }
 
+*/
+#define ENTRY_FOREACH(embed_files, entry) \
+	int i;									\
+	for (i = 0, entry = embed_files[i]; entry->filename != NULL; ++i)
+
+/*
 static zend_file_handle get_embed_file_handle(char *extname)
 {
 	zend_file_handle handle = {0};
@@ -48,20 +56,32 @@ static zend_file_handle get_embed_file_handle(char *extname)
 	handle.filename = "ext-embed-dummy-file.php";
 	handle.stream.mmap.buf = handle.fp;
 	// TODO
+	return 0;
+}
+	*/
+
+int php_embed_startup(const char *extname, const php_ext_lib_entry **embed_files)
+{
+	const php_ext_lib_entry *entry = NULL;
+
+	ENTRY_FOREACH(embed_files, entry) {
+	
+	}
+	return 0;
 }
 
-int php_embed_startup(const char *extname)
+int php_embed_do_include_file(const char *extname, const php_ext_lib_entry **embed_files)
 {
+	const php_ext_lib_entry *entry = NULL;
 
+	ENTRY_FOREACH(embed_files, entry) {
+	
+	}
+	return 0;
 }
 
-int php_embed_do_include_file(const char *extname)
+int php_embed_shutdown(const char *extname, const php_ext_lib_entry **embed_files)
 {
-
-}
-
-int php_embed_shutdown(const char *extname)
-{
-
+	return 0;
 }
 

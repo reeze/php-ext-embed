@@ -81,15 +81,23 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
   echo "const php_ext_lib_entry ext_$1_embed_files[[]] = {"		>> $ext_embed_files_header
   for ac_src in $2; do
     if test -f "$ac_src"; then
-	  ac_src_hash=
-      echo "\t{\"$ac_src\", \"$ac_src_hash\"},"					>> $ext_embed_files_header
+	  dummy_filename="extension://$1/$ac_src"
+	  dnl TODO Linux
+	  MD5=md5
+	  section_name=ext_`echo $dummy_filename | $MD5`
+	  section_name=${section_name:0:16}
+      echo "\t{"						>> $ext_embed_files_header
+	  echo "\t\t\"$ac_src\"",			>> $ext_embed_files_header
+	  echo "\t\t\"$dummy_filename\""	>> $ext_embed_files_header
+	  echo "\t\t\"$section_name\"",		>> $ext_embed_files_header
+	  echo "\t},"						>> $ext_embed_files_header
       PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"
 	  shared_objects_$1="$shared_objects_$1 $ac_src"
 	else
 	  AC_MSG_WARN([lib file $ac_src not found, ignored])
 	fi
   done
-  echo "\t{NULL, NULL}"										>> $ext_embed_files_header
+  echo "\t{NULL, NULL, NULL}"										>> $ext_embed_files_header
   echo "};"											>> $ext_embed_files_header
   echo ""											>> $ext_embed_files_header
   echo "#endif"										>> $ext_embed_files_header
