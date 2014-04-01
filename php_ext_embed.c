@@ -43,8 +43,7 @@ static zend_mmap get_embed_handle(char *extname)
 
 */
 #define ENTRY_FOREACH(embed_files, entry) \
-	int i;									\
-	for (i = 0, entry = embed_files[i]; entry->filename != NULL; ++i)
+	for (entry = embed_files; entry->filename != NULL; (embed_files++), entry = embed_files)
 
 /*
 static zend_file_handle get_embed_file_handle(char *extname)
@@ -60,7 +59,7 @@ static zend_file_handle get_embed_file_handle(char *extname)
 }
 	*/
 
-int php_embed_startup(const char *extname, const php_ext_lib_entry **embed_files)
+int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files)
 {
 	const php_ext_lib_entry *entry = NULL;
 
@@ -70,7 +69,7 @@ int php_embed_startup(const char *extname, const php_ext_lib_entry **embed_files
 	return 0;
 }
 
-int php_embed_do_include_file(const char *extname, const php_ext_lib_entry **embed_files)
+int php_embed_do_include_file(const char *extname, php_ext_lib_entry *embed_files)
 {
 	const php_ext_lib_entry *entry = NULL;
 
@@ -80,7 +79,7 @@ int php_embed_do_include_file(const char *extname, const php_ext_lib_entry **emb
 	return 0;
 }
 
-int php_embed_shutdown(const char *extname, const php_ext_lib_entry **embed_files)
+int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files)
 {
 	return 0;
 }

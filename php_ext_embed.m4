@@ -78,7 +78,9 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
   echo "#ifndef _PHP_EXT_EMBED_${php_ext_upper_name}_"	>> $ext_embed_files_header
   echo "#define _PHP_EXT_EMBED_${php_ext_upper_name}_"	>> $ext_embed_files_header
   echo ""											>> $ext_embed_files_header
-  echo "const php_ext_lib_entry ext_$1_embed_files[[]] = {"		>> $ext_embed_files_header
+  echo "php_ext_lib_entry ext_$1_embed_files[[]] = {"		>> $ext_embed_files_header
+
+  PHP_SUBST(EXTRA_CFLAGS)
   for ac_src in $2; do
     if test -f "$ac_src"; then
 	  dummy_filename="extension://$1/$ac_src"
@@ -93,6 +95,8 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
 	  echo "\t},"						>> $ext_embed_files_header
       PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"
 	  shared_objects_$1="$shared_objects_$1 $ac_src"
+
+	  EXTRA_CFLAGS="$EXTRA_CFLAGS -Wl,-sectcreate,__text,${section_name},${ac_src}"
 	else
 	  AC_MSG_WARN([lib file $ac_src not found, ignored])
 	fi
@@ -101,4 +105,8 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
   echo "};"											>> $ext_embed_files_header
   echo ""											>> $ext_embed_files_header
   echo "#endif"										>> $ext_embed_files_header
+
+  dnl embed php files to target
+
+
 ])
