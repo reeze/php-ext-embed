@@ -27,13 +27,12 @@ $ cd myext
 $ # add your logic
 ```
 
-## Dependency
+## Requirements/Dependency
 
+1. PHP >= 5.2
 1. libelf on *Nix
 
 ## Limitations
 
-1. Lib files could only be in same folder for now
+1. Lib files are included by the order decleared in config.m4
 1. It works for \*Nix for now, Windows is not supported yet
-
-
