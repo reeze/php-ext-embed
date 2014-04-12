@@ -105,11 +105,11 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
 	  dnl TODO Linux
 	  section_name=ext.`echo $dummy_filename | $MD5_CMD`
 	  section_name=${section_name:0:16}
-      echo "\t{"						>> $ext_embed_files_header
-	  echo "\t\t\"$ac_src\"",			>> $ext_embed_files_header
-	  echo "\t\t\"$dummy_filename\""	>> $ext_embed_files_header
-	  echo "\t\t\"$section_name\"",		>> $ext_embed_files_header
-	  echo "\t},"						>> $ext_embed_files_header
+      echo "	{"						>> $ext_embed_files_header
+	  echo "		\"$ac_src\"",			>> $ext_embed_files_header
+	  echo "		\"$dummy_filename\""	>> $ext_embed_files_header
+	  echo "		\"$section_name\"",		>> $ext_embed_files_header
+	  echo "	},"						>> $ext_embed_files_header
       PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"
 	  shared_objects_$1="$shared_objects_$1 $ac_src"
 
@@ -127,7 +127,7 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
 	  AC_MSG_WARN([lib file $ac_src not found, ignored])
 	fi
   done
-  echo "\t{NULL, NULL, NULL}"										>> $ext_embed_files_header
+  echo "	{NULL, NULL, NULL}"										>> $ext_embed_files_header
   echo "};"											>> $ext_embed_files_header
   echo ""											>> $ext_embed_files_header
   echo "#endif"										>> $ext_embed_files_header
