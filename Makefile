@@ -1,9 +1,11 @@
-all: sample-ext
+all: sample/config.m4 sample-ext-build
 
-sample-ext: php_ext_embed.c php_ext_embed.h sample/config.m4
+sample-ext-build: php_ext_embed.c php_ext_embed.h
 	@$(MAKE) -C sample
 
 sample/config.m4: php_ext_embed.m4
+
+php_ext_embed.m4:
 	cd sample && phpize && ./configure
 
 test: all
