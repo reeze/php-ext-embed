@@ -91,7 +91,7 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
   fi
 
   PHP_ADD_INCLUDE($EXT_EMBED_LIBELF_INCLUDE_DIR/include)
-  PHP_ADD_LIBRARY_WITH_PATH(elf, $EXT_EMBED_LIBELF_LIB_DIR)
+  PHP_ADD_LIBRARY_WITH_PATH(elf, $EXT_EMBED_LIBELF_LIB_DIR, SAMPLE_SHARED_LIBADD)
 ])
 
 dnl
@@ -126,32 +126,32 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
 
   for ac_src in $2; do
     if test -f "$ac_src"; then
-    dummy_filename="extension://$1/$ac_src"
-    dnl TODO Linux
-    section_name=ext.`echo $dummy_filename | $MD5_CMD`
-    section_name=${section_name:0:16}
-    echo "  {"            >> $ext_embed_files_header
-    echo "    \"$ac_src\"",      >> $ext_embed_files_header
-    echo "    \"$dummy_filename\""  >> $ext_embed_files_header
-    echo "    \"$section_name\"",    >> $ext_embed_files_header
-    echo "  },"            >> $ext_embed_files_header
+      dummy_filename="extension://$1/$ac_src"
+      dnl TODO Linux
+      section_name=ext.`echo $dummy_filename | $MD5_CMD`
+      section_name=${section_name:0:16}
+      echo "  {"            >> $ext_embed_files_header
+      echo "    \"$ac_src\"",      >> $ext_embed_files_header
+      echo "    \"$dummy_filename\""  >> $ext_embed_files_header
+      echo "    \"$section_name\"",    >> $ext_embed_files_header
+      echo "  },"            >> $ext_embed_files_header
 
-    PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"
-    shared_objects_$1="$shared_objects_$1 $ac_src"
+      PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"
+      shared_objects_$1="$shared_objects_$1 $ac_src"
 
-    case $host_alias in
-      *darwin*[)]
-      dnl Tricky way. There is no way to hook it link stage :(
-      dnl so there are warnings when compile with mac
-      LDFLAGS="$LDFLAGS -Wl,-sectcreate,__text,${section_name},${ac_src}"
-      ;;
-      *[)]
-      php_ext_embed_libs="$php_ext_embed_libs --add-section "${section_name}=${ac_src}""
-      ;;
-    esac
-  else
-    AC_MSG_WARN([lib file $ac_src not found, ignored])
-  fi
+      case $host_alias in
+        *darwin*[)]
+        dnl Tricky way. There is no way to hook it link stage :(
+        dnl so there are warnings when compile with mac
+        LDFLAGS="$LDFLAGS -Wl,-sectcreate,__text,${section_name},${ac_src}"
+        ;;
+        *[)]
+        php_ext_embed_libs="$php_ext_embed_libs --add-section "${section_name}=${ac_src}""
+        ;;
+      esac
+    else
+      AC_MSG_WARN([lib file $ac_src not found, ignored])
+    fi
   done
   echo "  {NULL, NULL, NULL}"                    >> $ext_embed_files_header
   echo "};"                      >> $ext_embed_files_header

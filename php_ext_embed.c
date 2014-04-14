@@ -25,13 +25,14 @@
 
 #include <Zend/zend_compile.h>
 #include <Zend/zend_execute.h>
-#include <Zend/zend_stream.h>
+
+#include <Zend/zend.h>
 
 #include "php_ext_embed.h"
 
 typedef struct _embed_handle {
 	FILE *fp;
-	off_t offset;
+	size_t offset;
 	size_t length;
 } ext_embed_handle;
 
@@ -45,19 +46,43 @@ static zend_mmap get_embed_handle(char *extname)
 #define ENTRY_FOREACH(embed_files, entry) \
 	for (entry = embed_files; entry->filename != NULL; (embed_files++), entry = embed_files)
 
-/*
-static zend_file_handle get_embed_file_handle(char *extname)
+static char* get_ext_so_file_path(char *extname)
 {
-	zend_file_handle handle = {0};
-	embed_handle handle = get_embed_handle(extname);
 
-	handle.type = ZEND_HANDLE_MAPPED;
-	handle.filename = "ext-embed-dummy-file.php";
-	handle.stream.mmap.buf = handle.fp;
+}
+
+static zend_file_handle get_embed_file_handle(char *extname, php_ext_lib_entry *entry)
+{
+	if (!entry->handle) {
+		zend_file_handle *handle = pemalloc(sizeof(zend_file_handle));
+		/* Use mode 0 for now */
+		int result = php_stream_open_for_zend_ex(get_ext_so_file_path(extname), handle, 0);
+
+		handle.type = ZEND_HANDLE_MAPPED;
+		handle->filename = entry->dummy_filename;
+		handle.stream.mmap.buf = handle.fp;
+
+		entry->handle = handle;
+	}
+
+	return entry->handle;
 	// TODO
 	return 0;
+
+#ifdef __APPLE__
+   const struct section_64 *sect = getsectbyname("__text", section);
+   if (sect) {
+     desc->m_filename = fname;
+     desc->m_start = sect->offset;
+     desc->m_len = sect->size;
+     return !desc->m_filename.empty();
+   }
+
+#else
+# error Linux is  Not implemented yet
+#endif
+
 }
-	*/
 
 int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files)
 {
@@ -74,7 +99,8 @@ int php_embed_do_include_file(const char *extname, php_ext_lib_entry *embed_file
 	const php_ext_lib_entry *entry = NULL;
 
 	ENTRY_FOREACH(embed_files, entry) {
-	
+		// TODO error checking?
+		zend_execute_scripts(ZEND_INCLUDE TSRMLS_DC, 1, get_embed_handle(extname, entry));
 	}
 	return 0;
 }
