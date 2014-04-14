@@ -1,7 +1,7 @@
 dnl $Id$
 dnl config.m4 for extension sample
 
-PHP_EXT_EMBED_DIR=../
+PHP_EXT_EMBED_DIR=..
 
 m4_include(../php_ext_embed.m4)
 
