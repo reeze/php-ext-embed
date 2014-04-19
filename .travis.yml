@@ -1,7 +1,7 @@
 language: php
 
 php:
-  - 5.2
+#  - 5.2
   - 5.3
   - 5.4
   - 5.5
@@ -13,7 +13,7 @@ env:
   - REPORT_EXIT_STATUS=1 NO_INTERACTION=1
 
 script:
-  - cd sample && phpize && ./configure && make && make test
+  - make test
 
 notifications:
   email:
