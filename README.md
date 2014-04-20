@@ -39,7 +39,7 @@ $ # add your logic
 ## Requirements/Dependency
 
 1. PHP >= 5.2
-1. libelf on *Nix
+1. elfutils on *Nix
 
 ## Limitations
 
