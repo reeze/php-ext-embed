@@ -1,4 +1,17 @@
 #!/bin/sh
 
+ACTION=$1
 
-echo "TODO Not implemented for now"
+if [[ "$ACTION" == "" ]]; then
+	echo "Usage: $0 [new|upgrad] params"
+	echo "	- new extension-name			generate a new extension which enabled with embedable lib"
+	echo "	- upgrade extension-path		upgrade your extension to enable embedable lib"
+
+	exit 1
+fi
+
+if [[ "$ACTION" == "new" ]]; then
+	echo "TODO"
+else
+	echo "TODO"
+fi
