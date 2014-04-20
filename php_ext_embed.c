@@ -186,6 +186,7 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 		zend_op_array *op_array = zend_compile_string(code, (char *)entry->dummy_filename TSRMLS_CC);
 
 		/* We Just compile it to import class & function for now */
+		destroy_op_array(op_array TSRMLS_CC);
 		efree(op_array);
 		zval_ptr_dtor(&code);
 	}
