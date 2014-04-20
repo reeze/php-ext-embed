@@ -144,12 +144,14 @@ static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
 
 	/* Trick way to pass code to zend_compile_string. Explict close php */
 	char close_tag[] = "?>";
-	char *buf = emalloc(length + sizeof(close_tag));
+	int buf_size = length + sizeof(close_tag);
+	char *buf = emalloc(buf_size);
+
 	strcpy(buf, close_tag);
 	read_block_data(so_path, offset, length, buf + strlen(close_tag));
-	buf[length + sizeof(close_tag)] = '\0';
+	buf[buf_size - 1] = '\0';
 
-	ZVAL_STRING(code, buf, 0);
+	ZVAL_STRINGL(code, buf, buf_size - 1, 0);
 
 	return code;
 }
