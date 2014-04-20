@@ -3,6 +3,7 @@ config.h
 ext_embed_libs.h
 *lot
 *.lo
+*.la
 .libs
 *.la*~
 *.o
