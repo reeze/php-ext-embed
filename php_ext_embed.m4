@@ -38,9 +38,7 @@ AC_DEFUN([PHP_EXT_EMBED_NEW_EXTENSION],[
   case $host_alias in
     *linux*[)]
       dnl FIXME tricky way to add custom command after build for Linux
-      cat >>Makefile.objects<<EOF
-	objcopy $php_ext_embed_libs $phplibdir/$1.so
-EOF
+      echo "	objcopy $php_ext_embed_libs .libs/$1.so" >> Makefile.objects
       ;;
   esac
 ])
