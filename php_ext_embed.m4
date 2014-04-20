@@ -8,7 +8,7 @@ ext_embed_files_header=ext_embed_libs.h
 
 AC_DEFUN([PHP_EXT_EMBED_CHECK_VALID],[
   if test "$PHP_EXT_EMBED_DIR" = ""; then
-    AC_MSG_ERROR([PHP_EXT_EMBED_DIR is not set])
+  	PHP_EXT_EMBED_DIR=php-ext-embed
   fi
 ])
 
