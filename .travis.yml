@@ -7,7 +7,7 @@ php:
   - 5.5
 
 install:
-  - sudo apt-get install valgrind elfutils
+  - sudo apt-get install valgrind elfutils libelf-dev
 
 env:
   - REPORT_EXIT_STATUS=1 NO_INTERACTION=1
