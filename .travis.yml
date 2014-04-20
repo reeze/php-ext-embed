@@ -13,7 +13,7 @@ env:
   - REPORT_EXIT_STATUS=1 NO_INTERACTION=1
 
 script:
-  - make test
+  - make && make test
 
 notifications:
   email:
