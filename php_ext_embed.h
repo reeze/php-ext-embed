@@ -21,6 +21,8 @@
 #ifndef _PHP_EXT_EMBED_H_
 #define _PHP_EXT_EMBED_H_
 
+#define EXT_EMBED_DEBUG 1
+
 #include <Zend/zend_stream.h>
 
 typedef struct _php_ext_lib_entry {
@@ -30,13 +32,19 @@ typedef struct _php_ext_lib_entry {
 	zend_file_handle *handle; /* Update when read */
 } php_ext_lib_entry;
 
-#define PHP_EXT_EMBED_MINIT(extname)		php_embed_startup(#extname, ext_ ## extname ## _embed_files TSRMLS_DC)
-#define PHP_EXT_EMBED_RINIT(extname)		php_embed_do_include_files(#extname, ext_ ## extname ## _embed_files TSRMLS_DC)
+#define PHP_EXT_EMBED_MINIT(extname)		php_embed_startup(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
+#define PHP_EXT_EMBED_RINIT(extname)		php_embed_do_include_files(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 #define PHP_EXT_EMBED_RSHUTDOWN(extname)
-#define PHP_EXT_EMBED_MSTUTDOWN(extname)	php_embed_shutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_DC)
+#define PHP_EXT_EMBED_MSTUTDOWN(extname)	php_embed_shutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 
 int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
+
+#ifdef EXT_EMBED_DEBUG
+#define EMBED_DEBUG(args...) printf(##args)
+#else
+#define EMBED_DEBUG(args...)
+#endif
 
 #endif

@@ -16,11 +16,16 @@
    +----------------------------------------------------------------------+
 */
 
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 #include <libelf.h>
 #include <gelf.h>
 
 #ifdef __APPLE__
 #include <mach-o/getsect.h>
+#include <mach-o/dyld.h>
 #endif
 
 #include <php.h>
@@ -40,34 +45,127 @@
 #define MAX_PATH_LEN 256
 #endif
 
-typedef struct _embed_info {
-	FILE *fp;
-	size_t offset;
-	size_t length;
-} ext_embed_info;
 
-static ext_embed_info get_ext_embed_info(char *so_path, php_ext_lib_entry *entry)
+static int read_block_data(char *file, size_t offset, size_t length, char *buf)
 {
-	ext_embed_info info = {0};
+	int fd = open(file, O_RDONLY);
+
+	if (fd < 0) {
+		return FAILURE;
+	}
+
+	lseek(fd, offset, SEEK_SET);
+	read(fd, buf, length);
+
+	return SUCCESS;
+}
+
+#define RETURN_NULL_EX() do {\
+		printf("return from: %s\n", __FILE__);\
+		return NULL;\
+	} while(0)
+
+/* Mostly came from HHVM source */
+static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
+{
+	zval* code = NULL;
+	size_t offset = 0, length = 0;
+
 #ifdef __APPLE__
-   const struct section_64 *sect = getsectbyname("__text", entry->section_name);
-   if (sect) {
-     info.offset = sect->offset;
-     info.length = sect->size;
-   }
+	int i, count = _dyld_image_count();
+	for (i = 0; i < count; i++) {
+		const struct mach_header_64 *head = (struct mach_header_64 *) _dyld_get_image_header(i);
+		const struct section_64 *section = getsectbynamefromheader_64(head,"__text", entry->section_name);
+
+		if (section) {
+			offset = section->offset;
+			length = section->size;
+			break; 
+		}   
+	}   
+
 #else
-# error Linux is  Not implemented yet
+	GElf_Shdr shdr;
+	size_t shstrndx = -1;
+	char *name;
+	Elf_Scn *scn;
+
+	if (elf_version(EV_CURRENT) == EV_NONE) {
+		RETURN_NULL_EX();
+	}
+
+	int fd = open(so_path, O_RDONLY, 0);
+	if (fd < 0) {
+		RETURN_NULL_EX();
+	}
+
+	Elf* e = elf_begin(fd, ELF_C_READ, NULL);
+	if (e == NULL || elf_kind(e) != ELF_K_ELF) {
+		close(fd);
+		elf_end(e); 
+		RETURN_NULL_EX();
+	}
+
+#ifdef HAVE_ELF_GETSHDRSTRNDX
+	int stat = elf_getshdrstrndx(e, &shstrndx);
+#else
+	int stat = elf_getshstrndx(e, &shstrndx);
 #endif
 
-     return info;
+	if (stat < 0 || shstrndx == -1) {
+		close(fd);
+		elf_end(e); 
+		RETURN_NULL_EX();
+	}
+
+	scn = NULL;
+	while ((scn = elf_nextscn(e, scn)) != NULL) {
+		if (gelf_getshdr(scn, &shdr) != &shdr ||
+				!(name = elf_strptr(e, shstrndx , shdr.sh_name))) {
+			close(fd);
+			elf_end(e); 
+			RETURN_NULL_EX();
+		}
+		if (!strcmp(entry->section_name, name)) {
+			GElf_Shdr ghdr;
+			if (gelf_getshdr(scn, &ghdr) != &ghdr) {
+				close(fd);
+				elf_end(e); 
+				RETURN_NULL_EX();
+			}
+			offset = ghdr.sh_offset;
+			length  = ghdr.sh_size;
+			break;
+		}
+	}
+#endif
+
+	MAKE_STD_ZVAL(code);
+
+	/* Trick way to pass code to zend_compile_string. Explict close php */
+	char close_tag[] = "?>";
+	char *buf = emalloc(length + sizeof(close_tag));
+	strcpy(buf, close_tag);
+	read_block_data(so_path, offset, length, buf + strlen(close_tag));
+	buf[length + sizeof(close_tag)] = '\0';
+
+	ZVAL_STRING(code, buf, 0);
+
+	return code;
 }
 
 
 #define ENTRY_FOREACH(embed_files, entry) \
 	for (entry = embed_files; entry->filename != NULL; (embed_files++), entry = embed_files)
 
-static zend_file_handle* get_embed_file_handle(const char *extname, php_ext_lib_entry *entry TSRMLS_DC)
+int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
+	return SUCCESS;
+}
+
+int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
+{
+	php_ext_lib_entry *entry = NULL;
 	static char so_path[MAX_PATH_LEN] = {0};
 
 	// TODO support static extension build
@@ -75,45 +173,22 @@ static zend_file_handle* get_embed_file_handle(const char *extname, php_ext_lib_
 		snprintf(so_path, MAX_PATH_LEN, "%s/%s.so", INI_STR("extension_dir"), extname);
 	}
 
-	if (!entry->handle) {
-		ext_embed_info info = get_ext_embed_info(so_path, entry);
-		zend_file_handle *handle = pemalloc(sizeof(zend_file_handle), 1);
-		/* Use mode 0 for now */
-		int result = php_stream_open_for_zend_ex(so_path, handle, 0 TSRMLS_CC);
-
-/*
-		handle.type = ZEND_HANDLE_MAPPED;
-		handle->filename = entry->dummy_filename;
-		handle.stream.mmap.buf = handle.fp;
-		*/
-
-		entry->handle = handle;
-	}
-
-	return entry->handle;
-}
-
-int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
-{
-	php_ext_lib_entry *entry = NULL;
-
 	ENTRY_FOREACH(embed_files, entry) {
-	
-	}
-	return 0;
-}
+		zval *code = get_embed_data(so_path, entry TSRMLS_CC);
 
-int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
-{
-	php_ext_lib_entry *entry = NULL;
+		if (!code) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "failed to load embed lib: %s", entry->dummy_filename);	
+			return FAILURE;	
+		}
 
-	ENTRY_FOREACH(embed_files, entry) {
-		zval *retval = NULL;
-		// TODO error checking?
-		zend_execute_scripts(ZEND_INCLUDE TSRMLS_CC, &retval, 1,
-			get_embed_file_handle(extname, entry TSRMLS_CC));
+		zend_op_array *op_array = zend_compile_string(code, (char *)entry->dummy_filename TSRMLS_CC);
+
+		/* We Just compile it to import class & function for now */
+		efree(op_array);
+		zval_ptr_dtor(&code);
 	}
-	return 0;
+
+	return SUCCESS;
 }
 
 int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
