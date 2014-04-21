@@ -70,12 +70,12 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
   for i in $EXT_EMBED_SEARCH_PATH; do
     if test -r $i/$EXT_EMBED_SEARCH_FOR; then
     EXT_EMBED_LIBELF_INCLUDE_DIR=$i
-        AC_MSG_RESULT(libelf found in $i)
+        AC_MSG_RESULT(libelf found headers in $i)
     fi
 
     if test -r $i/$EXT_EMBED_SEARCH_FOR; then
       EXT_EMBED_LIBELF_INCLUDE_DIR=$i
-      AC_MSG_RESULT(libelf found in $i)
+      AC_MSG_RESULT(libelf found lib in $i)
     fi
 
     if test -r $i/$PHP_LIBDIR/$SEARCH_LIB.a || test -r $i/$PHP_LIBDIR/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
