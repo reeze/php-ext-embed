@@ -21,6 +21,13 @@ Please refer to sample extension: <https://github.com/reeze/php-ext-embed/blob/m
 
 Only 7 lines changing needed to your extension.
 
+**Quick start: **
+
+1. Download php-ext-embed
+1. `$ cd php-ext-emebed`
+1. `$ make # now you build you extension`
+1. update sample/lib/*.php files to test
+
 ### New extension from scratch
 1. Download php-ext-embed
 1. generate your extension skeleton
