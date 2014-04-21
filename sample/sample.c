@@ -24,11 +24,12 @@
 
 #include <php.h>
 #include <ext/standard/info.h>
-#include <php_ext_embed.h>
+
+#include "php_ext_embed.h"
+#include "ext_embed_libs.h"
 
 #include "php_sample.h"
 
-#include "ext_embed_libs.h"
 
 #ifndef PHP_FE_END
 # define PHP_FE_END { NULL, NULL, NULL, 0, 0 }
