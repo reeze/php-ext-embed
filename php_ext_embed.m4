@@ -60,6 +60,12 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
   fi
 
   PHP_ADD_INCLUDE($PHP_EXT_EMBED_DIR)
+
+  which dpkg-architecture 2>&1 > /dev/null
+
+  if [[ $? == 0 ]]; then
+	DEB_HOST_MULTIARCH=`dpkg-architecture -qDEB_HOST_MULTIARCH`
+  fi
  
   AC_MSG_CHECKING([whether libelf is found])
 
@@ -69,17 +75,19 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
 
   for i in $EXT_EMBED_SEARCH_PATH; do
     if test -r $i/$EXT_EMBED_SEARCH_FOR; then
-    EXT_EMBED_LIBELF_INCLUDE_DIR=$i
-        AC_MSG_RESULT(libelf found headers in $i)
-    fi
-
-    if test -r $i/$EXT_EMBED_SEARCH_FOR; then
       EXT_EMBED_LIBELF_INCLUDE_DIR=$i
-      AC_MSG_RESULT(libelf found lib in $i)
+      AC_MSG_RESULT(libelf found header in $i)
     fi
 
-    if test -r $i/$PHP_LIBDIR/$SEARCH_LIB.a || test -r $i/$PHP_LIBDIR/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
-      EXT_EMBED_LIBELF_LIB_DIR=$i/$PHP_LIBDIR
+    BASELIB=$i/$PHP_LIBDIR
+
+    if test -r $BASELIB/$SEARCH_LIB.a || test -r $BASELIB/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
+      EXT_EMBED_LIBELF_LIB_DIR=$BASELIB
+      AC_MSG_RESULT(libelf lib found in $EXT_EMBED_LIBELF_LIB_DIR)
+    fi
+
+    if test -r $BASELIB/$DEB_HOST_MULTIARCH/$SEARCH_LIB.a || test -r $BASELIB/$DEB_HOST_MULTIARCH/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
+      EXT_EMBED_LIBELF_LIB_DIR=$BASELIB/$DEB_HOST_MULTIARCH
       AC_MSG_RESULT(libelf lib found in $EXT_EMBED_LIBELF_LIB_DIR)
     fi
   done
