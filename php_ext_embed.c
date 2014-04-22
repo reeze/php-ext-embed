@@ -62,10 +62,10 @@ static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
 	int i, count = _dyld_image_count();
 	for (i = 0; i < count; i++) {
 #ifndef __LP64__
-		const struct mach_header *head = (struct mach_header *) _dyld_get_image_header(i);
+		const struct mach_header *head = (struct mach_header *)_dyld_get_image_header(i);
 		const struct section *section = getsectbynamefromheader(head,"__text", entry->section_name);
 #else
-		const struct mach_header_64 *head = (struct mach_header_64 *) _dyld_get_image_header(i);
+		const struct mach_header_64 *head = (struct mach_header_64 *)_dyld_get_image_header(i);
 		const struct section_64 *section = getsectbynamefromheader_64(head,"__text", entry->section_name);
 #endif
 
