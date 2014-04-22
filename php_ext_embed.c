@@ -29,22 +29,14 @@
 #endif
 
 #include <php.h>
-#include <main/php_main.h>
-
 #include <Zend/zend_compile.h>
-#include <Zend/zend_execute.h>
-
-#include <Zend/zend.h>
 #include <Zend/zend_ini.h>
-
-
 
 #include "php_ext_embed.h"
 
 #ifndef MAX_PATH_LEN
 #define MAX_PATH_LEN 256
 #endif
-
 
 static int read_block_data(char *file, size_t offset, size_t length, char *buf)
 {
@@ -59,11 +51,6 @@ static int read_block_data(char *file, size_t offset, size_t length, char *buf)
 
 	return SUCCESS;
 }
-
-#define RETURN_NULL_EX() do {\
-		printf("return from: %s\n", __FILE__);\
-		return NULL;\
-	} while(0)
 
 /* Mostly came from HHVM source */
 static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
@@ -91,19 +78,19 @@ static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
 	Elf_Scn *scn;
 
 	if (elf_version(EV_CURRENT) == EV_NONE) {
-		RETURN_NULL_EX();
+		return NULL;
 	}
 
 	int fd = open(so_path, O_RDONLY, 0);
 	if (fd < 0) {
-		RETURN_NULL_EX();
+		return NULL;
 	}
 
 	Elf* e = elf_begin(fd, ELF_C_READ, NULL);
 	if (e == NULL || elf_kind(e) != ELF_K_ELF) {
 		close(fd);
 		elf_end(e); 
-		RETURN_NULL_EX();
+		return NULL;
 	}
 
 #ifdef HAVE_ELF_GETSHDRSTRNDX
@@ -115,7 +102,7 @@ static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
 	if (stat < 0 || shstrndx == -1) {
 		close(fd);
 		elf_end(e); 
-		RETURN_NULL_EX();
+		return NULL;
 	}
 
 	scn = NULL;
@@ -124,14 +111,14 @@ static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
 				!(name = elf_strptr(e, shstrndx , shdr.sh_name))) {
 			close(fd);
 			elf_end(e); 
-			RETURN_NULL_EX();
+			return NULL;
 		}
 		if (!strcmp(entry->section_name, name)) {
 			GElf_Shdr ghdr;
 			if (gelf_getshdr(scn, &ghdr) != &ghdr) {
 				close(fd);
 				elf_end(e); 
-				RETURN_NULL_EX();
+				return NULL;
 			}
 			offset = ghdr.sh_offset;
 			length  = ghdr.sh_size;
@@ -186,6 +173,7 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 		zend_op_array *op_array = zend_compile_string(code, (char *)entry->dummy_filename TSRMLS_CC);
 
 		/* We Just compile it to import class & function for now */
+		/* TODO save imported classes/functions to reduce compile every RINIT */
 		destroy_op_array(op_array TSRMLS_CC);
 		efree(op_array);
 		zval_ptr_dtor(&code);

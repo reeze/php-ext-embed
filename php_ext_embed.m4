@@ -140,7 +140,6 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
       echo "    \"$ac_src\"",      >> $ext_embed_files_header
       echo "    \"$dummy_filename\"",  >> $ext_embed_files_header
       echo "    \"$section_name\"",    >> $ext_embed_files_header
-      echo "    NULL"					>> $ext_embed_files_header
       echo "  },"            >> $ext_embed_files_header
 
       PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"
@@ -160,7 +159,7 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
       AC_MSG_WARN([lib file $ac_src not found, ignored])
     fi
   done
-  echo "  {NULL, NULL, NULL, NULL}"                    >> $ext_embed_files_header
+  echo "  {NULL, NULL, NULL}"                    >> $ext_embed_files_header
   echo "};"                      >> $ext_embed_files_header
   echo ""                      >> $ext_embed_files_header
   echo "#endif"                    >> $ext_embed_files_header
