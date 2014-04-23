@@ -36,6 +36,11 @@ dnl "zend_ext" indicates a zend extension.
 AC_DEFUN([PHP_EXT_EMBED_NEW_EXTENSION],[
   PHP_EXT_EMBED_CHECK_VALID()
 
+  if test "$3" == "yes" || test "$3" == "shared"; then
+  	CFLAGS="$CFLAGS -DPHP_EXT_EMBED_SHARED=1"
+  	CXXFLAGS="$CXXFLAGS -DPHP_EXT_EMBED_SHARED=1"
+  fi
+
   PHP_NEW_EXTENSION($1, [$2 $PHP_EXT_EMBED_DIR/php_ext_embed.c], $3, $4, $5, $6, $7)
 
   case $host_alias in

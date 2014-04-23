@@ -53,7 +53,7 @@ static int read_block_data(char *file, size_t offset, size_t length, char *buf)
 }
 
 /* Mostly came from HHVM source */
-static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
+static zval* get_embed_data(char *bin_path, php_ext_lib_entry *entry TSRMLS_DC)
 {
 	zval* code = NULL;
 	size_t offset = 0, length = 0;
@@ -86,7 +86,7 @@ static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
 		return NULL;
 	}
 
-	int fd = open(so_path, O_RDONLY, 0);
+	int fd = open(bin_path, O_RDONLY, 0);
 	if (fd < 0) {
 		return NULL;
 	}
@@ -140,7 +140,7 @@ static zval* get_embed_data(char *so_path, php_ext_lib_entry *entry TSRMLS_DC)
 	char *buf = emalloc(buf_size);
 
 	strcpy(buf, close_tag);
-	read_block_data(so_path, offset, length, buf + strlen(close_tag));
+	read_block_data(bin_path, offset, length, buf + strlen(close_tag));
 	buf[buf_size - 1] = '\0';
 
 	ZVAL_STRINGL(code, buf, buf_size - 1, 0);
@@ -157,18 +157,28 @@ int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS
 	return SUCCESS;
 }
 
+
 int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_lib_entry *entry = NULL;
-	static char so_path[MAX_PATH_LEN] = {0};
+	static char bin_path[MAX_PATH_LEN] = {0};
 
-	// TODO support static extension build
-	if (so_path[0] == '\0') {
-		snprintf(so_path, MAX_PATH_LEN, "%s/%s.so", INI_STR("extension_dir"), extname);
+	if (bin_path[0] == '\0') {
+#ifdef PHP_EXT_EMBED_SHARED
+		snprintf(bin_path, MAX_PATH_LEN, "%s/%s.so", INI_STR("extension_dir"), extname);
+#else
+		/* Then it is a static build */
+#  ifdef __linux__
+		ssize_t count = readlink("/proc/self/exe", bin_path, MAX_PATH_LEN);
+#  elif defined(__APPLE__)
+		uint32_t size = sizeof(bin_path);
+		uint32_t success = _NSGetExecutablePath(bin_path, &size);
+#  endif
+#endif
 	}
 
 	ENTRY_FOREACH(embed_files, entry) {
-		zval *code = get_embed_data(so_path, entry TSRMLS_CC);
+		zval *code = get_embed_data(bin_path, entry TSRMLS_CC);
 
 		if (!code) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "failed to load embed lib: %s", entry->dummy_filename);	
