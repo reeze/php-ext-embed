@@ -69,7 +69,7 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
  
   AC_MSG_CHECKING([whether libelf is found])
 
-  EXT_EMBED_SEARCH_PATH="/usr/local /usr"
+  EXT_EMBED_SEARCH_PATH="/usr/local /usr $LIBRARY_PATH $LD_LIBRARY_PATH"
   EXT_EMBED_SEARCH_FOR="include/libelf.h"
   SEARCH_LIB="libelf"
 
