@@ -189,8 +189,10 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 
 		/* We Just compile it to import class & function for now */
 		/* TODO save imported classes/functions to reduce compile every RINIT */
-		destroy_op_array(op_array TSRMLS_CC);
-		efree(op_array);
+		if (op_array != NULL) {
+			destroy_op_array(op_array TSRMLS_CC);
+			efree(op_array);
+		}
 		zval_ptr_dtor(&code);
 	}
 
