@@ -147,8 +147,7 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_LIB],[
 
       case $host_alias in
         *darwin*[)]
-        dnl Tricky way. There is no way to hook it link stage :(
-        dnl so there are warnings when compile with mac
+        dnl Append to LDFLAGS for now There is no way to hook it link stage with needed flags :(
         LDFLAGS="$LDFLAGS -Wl,-sectcreate,__text,${section_name},${ac_src}"
         ;;
         *[)]
