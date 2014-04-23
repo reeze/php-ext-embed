@@ -4,6 +4,9 @@ dnl
 dnl This file contains helper autoconf functions for php_ext_embed
 dnl
 
+PHP_ARG_WITH(libelf, with libelf path,
+[  --with-libelf   search libelf at this path], /usr)
+
 ext_embed_files_header=ext_embed_libs.h
 
 AC_DEFUN([PHP_EXT_EMBED_CHECK_VALID],[
@@ -69,25 +72,36 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
  
   AC_MSG_CHECKING([whether libelf is found])
 
-  EXT_EMBED_SEARCH_PATH="/usr/local /usr $LIBRARY_PATH $LD_LIBRARY_PATH"
+  EXT_EMBED_SEARCH_PATH="$PHP_LIBELF /usr/local /usr $LIBRARY_PATH $LD_LIBRARY_PATH"
+  AC_MSG_CHECKING(search libelf in $EXT_EMBED_SEARCH_PATH)
+
   EXT_EMBED_SEARCH_FOR="include/libelf.h"
   SEARCH_LIB="libelf"
 
   for i in $EXT_EMBED_SEARCH_PATH; do
+    if test "$EXT_EMBED_LIBELF_INCLUDE_DIR" != "" && test "$EXT_EMBED_LIBELF_LIB_DIR" != ""; then
+      break
+    fi
+
     if test -r $i/$EXT_EMBED_SEARCH_FOR; then
       EXT_EMBED_LIBELF_INCLUDE_DIR=$i
-      AC_MSG_RESULT(libelf found header in $i)
+      AC_MSG_RESULT(libelf header found header in $i)
     fi
 
     BASELIB=$i/$PHP_LIBDIR
 
-    if test -r $BASELIB/$SEARCH_LIB.a || test -r $BASELIB/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
-      EXT_EMBED_LIBELF_LIB_DIR=$BASELIB
-      AC_MSG_RESULT(libelf lib found in $EXT_EMBED_LIBELF_LIB_DIR)
+    if test "$EXT_EMBED_LIBELF_LIB_DIR" != ""; then
+      continue
     fi
 
     if test -r $BASELIB/$DEB_HOST_MULTIARCH/$SEARCH_LIB.a || test -r $BASELIB/$DEB_HOST_MULTIARCH/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
       EXT_EMBED_LIBELF_LIB_DIR=$BASELIB/$DEB_HOST_MULTIARCH
+      AC_MSG_RESULT(libelf lib found in $EXT_EMBED_LIBELF_LIB_DIR)
+	  continue
+    fi
+
+    if test -r $BASELIB/$SEARCH_LIB.a || test -r $BASELIB/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
+      EXT_EMBED_LIBELF_LIB_DIR=$BASELIB
       AC_MSG_RESULT(libelf lib found in $EXT_EMBED_LIBELF_LIB_DIR)
     fi
   done
