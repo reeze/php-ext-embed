@@ -66,6 +66,9 @@ $ # add your logic
 1. PHP >= 5.2
 1. libelf-dev on *Nix
 
+> If you don't have permission to install libelf, you could compile one with your own
+> and try: `./configure --with-libelf=/path/to/your/libelf`
+
 ## Limitations
 
 1. Lib files are included by the order decleared in config.m4
