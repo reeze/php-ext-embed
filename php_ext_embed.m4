@@ -78,12 +78,17 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
   AC_MSG_CHECKING([whether libelf is found])
 
   EXT_EMBED_SEARCH_PATH="$PHP_LIBELF /usr/local /usr $LIBRARY_PATH $LD_LIBRARY_PATH"
-  AC_MSG_CHECKING(search libelf in $EXT_EMBED_SEARCH_PATH)
-
-  EXT_EMBED_SEARCH_FOR="include/libelf.h"
-  SEARCH_LIB="libelf"
 
   for i in $EXT_EMBED_SEARCH_PATH; do
+    EXT_EMBED_SEARCH_INCLUDE="$EXT_EMBED_SEARCH_INCLUDE $i/include $i/include/libelf"
+  done
+
+  AC_MSG_CHECKING(search libelf in $EXT_EMBED_SEARCH_PATH)
+
+  EXT_EMBED_SEARCH_FOR="libelf.h"
+  SEARCH_LIB="libelf"
+
+  for i in $EXT_EMBED_SEARCH_INCLUDE; do
     if test "$EXT_EMBED_LIBELF_INCLUDE_DIR" != "" && test "$EXT_EMBED_LIBELF_LIB_DIR" != ""; then
       break
     fi
@@ -92,12 +97,14 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
       EXT_EMBED_LIBELF_INCLUDE_DIR=$i
       AC_MSG_RESULT(libelf header found header in $i)
     fi
+  done
 
-    BASELIB=$i/$PHP_LIBDIR
-
+  for i in $EXT_EMBED_SEARCH_PATH; do
     if test "$EXT_EMBED_LIBELF_LIB_DIR" != ""; then
       continue
     fi
+
+	BASELIB=$i/$PHP_LIBDIR
 
     if test -r $BASELIB/$DEB_HOST_MULTIARCH/$SEARCH_LIB.a || test -r $BASELIB/$DEB_HOST_MULTIARCH/$SEARCH_LIB.$SHLIB_SUFFIX_NAME; then
       EXT_EMBED_LIBELF_LIB_DIR=$BASELIB/$DEB_HOST_MULTIARCH
@@ -115,7 +122,7 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
     AC_MSG_ERROR([libelf not found])
   fi
 
-  PHP_ADD_INCLUDE($EXT_EMBED_LIBELF_INCLUDE_DIR/include)
+  PHP_ADD_INCLUDE($EXT_EMBED_LIBELF_INCLUDE_DIR)
   PHP_ADD_LIBRARY_WITH_PATH(elf, $EXT_EMBED_LIBELF_LIB_DIR, SAMPLE_SHARED_LIBADD)
 ])
 
