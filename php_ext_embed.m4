@@ -75,6 +75,16 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
 	DEB_HOST_MULTIARCH=`dpkg-architecture -qDEB_HOST_MULTIARCH`
   fi
  
+  case $host_alias in
+    *darwin*[)]
+      ;;
+    *[)]
+      PHP_EXT_CHECK_LIBELF
+      ;;
+  esac
+])
+
+AC_DEFUN([PHP_EXT_CHECK_LIBELF],[
   AC_MSG_CHECKING([whether libelf is found])
 
   EXT_EMBED_SEARCH_PATH="$PHP_LIBELF /usr/local /usr $LIBRARY_PATH $LD_LIBRARY_PATH"

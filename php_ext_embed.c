@@ -20,12 +20,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include <libelf.h>
-#include <gelf.h>
-
 #ifdef __APPLE__
 #include <mach-o/getsect.h>
 #include <mach-o/dyld.h>
+#else
+#include <libelf.h>
+#include <gelf.h>
 #endif
 
 #include <php.h>
