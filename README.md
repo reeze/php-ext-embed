@@ -10,7 +10,12 @@ Build Status: [![Build Status](https://secure.travis-ci.org/reeze/php-ext-embed.
 `php-ext-embed` is a tool to help you implant pieces of PHP script right into
 your php extension (produced as `*.so`, written in C).
 
-## Why should I use it?
+## Why should I use
+
+The reason why we are writing PHP extensions is simple - improving performance
+by implementing critical algorithms in C under the most of circumstances, but
+around which you need some business code to wrap it, which is always very, very
+complicated using Zend APIs and trapping the green hands.
 
 The PHP lib could be embedded into your single extension so file.
 then your could write the performance critical part with `C` and the rest
@@ -72,9 +77,25 @@ $ # add your logic
 > If you don't have permission to install libelf, you could compile one with your own
 > and try: `./configure --with-libelf=/path/to/your/libelf`
 
+## Support
+
+### Operating systems
+
+Software are tested in operating systems listed below.
+
+1. RedHat 4+
+2. Mac OS 10.9+
+
+Windows is not supported yet.
+
+### PHP versions
+
+PHP 5.2, 5.3, 5.4, 5.5, 5.6
+
+HHVM is not supported (and not needed because of the language `Hack`).
+
 ## Limitations
 
-1. Lib files are included by the order decleared in config.m4
+1. Lib files are included by the order declared in config.m4
 1. lib's will **NOT** execute at the request startup like HHVM does,
    it just import your classes and functions
-1. It only works for \*Nix for now, Windows is not supported yet
