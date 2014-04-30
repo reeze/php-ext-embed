@@ -3,16 +3,17 @@ php-ext-embed
 
 Build Status: [![Build Status](https://secure.travis-ci.org/reeze/php-ext-embed.png)](http://travis-ci.org/reeze/php-ext-embed)
 
-*Mix it up with PHP and C!*
+## What it is
 
-`php-ext-embed` is a tool to help you building your php extension
-with both `PHP` and `C` by embed your php lib right inside your
-extension.
+**Mixed-language programming with PHP and C!**
+
+`php-ext-embed` is a tool to help you implant pieces of PHP script right into
+your php extension (produced as `*.so`, written in C).
 
 ## Why should I use it?
 
-The PHP lib could be embeded into your single extension so file.
-then your could write the performance ciritical part with `C` and the rest
+The PHP lib could be embedded into your single extension so file.
+then your could write the performance critical part with `C` and the rest
 with `PHP`, you got a single extension file without dependency.
 
 It will be much easier to maintain and distribute your extension.
