@@ -72,9 +72,9 @@ static zval* get_embed_data(char *bin_path, php_ext_lib_entry *entry TSRMLS_DC)
 		if (section) {
 			offset = section->offset;
 			length = section->size;
-			break; 
-		}   
-	}   
+			break;
+		}
+	}
 
 #else
 	GElf_Shdr shdr;
@@ -94,7 +94,7 @@ static zval* get_embed_data(char *bin_path, php_ext_lib_entry *entry TSRMLS_DC)
 	Elf* e = elf_begin(fd, ELF_C_READ, NULL);
 	if (e == NULL || elf_kind(e) != ELF_K_ELF) {
 		close(fd);
-		elf_end(e); 
+		elf_end(e);
 		return NULL;
 	}
 
@@ -106,7 +106,7 @@ static zval* get_embed_data(char *bin_path, php_ext_lib_entry *entry TSRMLS_DC)
 
 	if (stat < 0 || shstrndx == -1) {
 		close(fd);
-		elf_end(e); 
+		elf_end(e);
 		return NULL;
 	}
 
@@ -115,14 +115,14 @@ static zval* get_embed_data(char *bin_path, php_ext_lib_entry *entry TSRMLS_DC)
 		if (gelf_getshdr(scn, &shdr) != &shdr ||
 				!(name = elf_strptr(e, shstrndx , shdr.sh_name))) {
 			close(fd);
-			elf_end(e); 
+			elf_end(e);
 			return NULL;
 		}
 		if (!strcmp(entry->section_name, name)) {
 			GElf_Shdr ghdr;
 			if (gelf_getshdr(scn, &ghdr) != &ghdr) {
 				close(fd);
-				elf_end(e); 
+				elf_end(e);
 				return NULL;
 			}
 			offset = ghdr.sh_offset;
@@ -181,8 +181,8 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 		zval *code = get_embed_data(bin_path, entry TSRMLS_CC);
 
 		if (!code) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "failed to load embed lib: %s", entry->dummy_filename);	
-			return FAILURE;	
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "failed to load embed lib: %s", entry->dummy_filename);
+			return FAILURE;
 		}
 
 		zend_op_array *op_array = zend_compile_string(code, (char *)entry->dummy_filename TSRMLS_CC);
@@ -204,9 +204,8 @@ int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRML
 	php_ext_lib_entry *entry = NULL;
 
 	ENTRY_FOREACH(embed_files, entry) {
-	
+
 	}
 
 	return 0;
 }
-
