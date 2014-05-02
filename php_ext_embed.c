@@ -1,6 +1,6 @@
 /*
    +----------------------------------------------------------------------+
-   | PHP Embeddable Ext                                                   |
+   | PHP Embeddable Ext Project                                           |
    +----------------------------------------------------------------------+
    | Copyright (c) 1997-2014 The PHP Group                                |
    +----------------------------------------------------------------------+
@@ -33,6 +33,7 @@
 #include <Zend/zend_ini.h>
 
 #include "php_ext_embed.h"
+#include "php_ext_embed_cache.h"
 
 #ifndef MAX_PATH_LEN
 #define MAX_PATH_LEN 256
@@ -160,7 +161,9 @@ int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS
 
 int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
-	php_ext_lib_entry *entry = NULL;
+	static unsigned int include_times = 0;
+	include_times++;
+
 	static char bin_path[MAX_PATH_LEN] = {0};
 
 	if (bin_path[0] == '\0') {
@@ -177,6 +180,23 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 #endif
 	}
 
+	/* first time, compile scripts and cache it */
+	if (include_times == 1) {
+		php_embed_compile_string_init();
+		php_embed_compile_string(bin_path, embed_files);
+		php_embed_compile_string_finish();
+	}
+
+	/* restore from cache */
+	php_embed_cache_restore();
+
+	return SUCCESS;
+}
+
+int php_embed_compile_string(char *bin_path, php_ext_lib_entry *embed_files)
+{
+	php_ext_lib_entry *entry = NULL;
+
 	ENTRY_FOREACH(embed_files, entry) {
 		zval *code = get_embed_data(bin_path, entry TSRMLS_CC);
 
@@ -187,8 +207,6 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 
 		zend_op_array *op_array = zend_compile_string(code, (char *)entry->dummy_filename TSRMLS_CC);
 
-		/* We Just compile it to import class & function for now */
-		/* TODO save imported classes/functions to reduce compile every RINIT */
 		if (op_array != NULL) {
 			destroy_op_array(op_array TSRMLS_CC);
 			efree(op_array);

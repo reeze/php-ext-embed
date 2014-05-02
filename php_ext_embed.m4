@@ -41,7 +41,7 @@ AC_DEFUN([PHP_EXT_EMBED_NEW_EXTENSION],[
   	CXXFLAGS="$CXXFLAGS -DPHP_EXT_EMBED_SHARED=1"
   fi
 
-  PHP_NEW_EXTENSION($1, [$2 $PHP_EXT_EMBED_DIR/php_ext_embed.c], $3, $4, $5, $6, $7)
+  PHP_NEW_EXTENSION($1, [$2 $PHP_EXT_EMBED_DIR/*.c], $3, $4, $5, $6, $7)
 
   case $host_alias in
     *linux*[)]
