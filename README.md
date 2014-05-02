@@ -92,6 +92,8 @@ Windows is not supported yet.
 
 PHP 5.2, 5.3, 5.4, 5.5, 5.6
 
+PHP 5.1 and below are not supported.
+
 HHVM is not supported (and not needed because of the language `Hack`).
 
 ## Limitations
