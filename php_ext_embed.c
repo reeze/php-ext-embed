@@ -183,7 +183,7 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 	/* first time, compile scripts and cache it */
 	if (include_times == 1) {
 		php_embed_compile_string_init();
-		php_embed_compile_string(bin_path, embed_files);
+		php_embed_compile_string(bin_path, embed_files TSRMLS_CC);
 		php_embed_compile_string_finish();
 	}
 
@@ -193,7 +193,7 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 	return SUCCESS;
 }
 
-int php_embed_compile_string(char *bin_path, php_ext_lib_entry *embed_files)
+int php_embed_compile_string(char *bin_path, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_lib_entry *entry = NULL;
 

@@ -31,7 +31,7 @@ HashTable* orig_function_table;
 HashTable* orig_class_table;
 HashTable* orig_eg_class_table;
 
-void php_embed_cache_restore()
+void php_embed_cache_restore(TSRMLS_D)
 {
     function_table_tail = function_table_tail ? function_table_tail->pListNext : embed_global_function_table.pListHead;
     class_table_tail = class_table_tail ? class_table_tail->pListNext : embed_global_class_table.pListHead;
@@ -69,7 +69,7 @@ void php_embed_cache_restore()
     }
 }
 
-void php_embed_compile_string_init()
+void php_embed_compile_string_init(TSRMLS_D)
 {
     zend_hash_init(&embed_global_function_table, 32, NULL, ZEND_FUNCTION_DTOR, 1);
     orig_function_table = CG(function_table);
@@ -85,7 +85,7 @@ void php_embed_compile_string_init()
     class_table_tail = CG(class_table)->pListTail;
 }
 
-void php_embed_compile_string_finish()
+void php_embed_compile_string_finish(TSRMLS_D)
 {
     CG(function_table) = orig_function_table;
     CG(class_table) = orig_class_table;

@@ -34,7 +34,7 @@ typedef struct _php_ext_lib_entry {
 
 int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
-int php_embed_compile_string(char *bin_path, php_ext_lib_entry *embed_files);
+int php_embed_compile_string(char *bin_path, php_ext_lib_entry *embed_files TSRMLS_DC);
 int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 
 #endif

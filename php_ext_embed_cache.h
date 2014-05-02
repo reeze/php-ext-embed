@@ -19,8 +19,8 @@
 #ifndef _PHP_EXT_EMBED_OPCODE_CACHE_H_
 #define _PHP_EXT_EMBED_OPCODE_CACHE_H_
 
-void php_embed_compile_string_init();
-void php_embed_compile_string_finish();
-void php_embed_cache_restore();
+void php_embed_compile_string_init(TSRMLS_D);
+void php_embed_compile_string_finish(TSRMLS_D);
+void php_embed_cache_restore(TSRMLS_D);
 
 #endif
