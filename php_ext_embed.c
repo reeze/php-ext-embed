@@ -182,13 +182,13 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 
 	/* first time, compile scripts and cache it */
 	if (include_times == 1) {
-		php_embed_compile_string_init();
+		php_embed_compile_string_init(TSRMLS_C);
 		php_embed_compile_string(bin_path, embed_files TSRMLS_CC);
-		php_embed_compile_string_finish();
+		php_embed_compile_string_finish(TSRMLS_C);
 	}
 
 	/* restore from cache */
-	php_embed_cache_restore();
+	php_embed_cache_restore(TSRMLS_C);
 
 	return SUCCESS;
 }
