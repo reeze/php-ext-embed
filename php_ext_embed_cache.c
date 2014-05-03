@@ -41,10 +41,10 @@ void php_embed_cache_restore(TSRMLS_D)
         if (op_array->type == ZEND_USER_FUNCTION) {
             if (zend_hash_add(CG(function_table), function_table_tail->arKey, function_table_tail->nKeyLength, op_array, sizeof(zend_op_array), NULL) == FAILURE &&
                 function_table_tail->arKey[0] != '\0') {
-                // CG(in_compilation) = 1;
-                // CG(compiled_filename) = file_handle->opened_path;
-                // CG(zend_lineno) = op_array->line_start;
-                zend_error(E_ERROR, "Cannot redeclare %s()", function_table_tail->arKey);
+                CG(in_compilation) = 1;
+                CG(compiled_filename) = (char *)op_array->filename;
+                CG(zend_lineno) = op_array->line_start;
+                zend_error(E_ERROR, "Cannot redeclare function %s()", op_array->function_name);
             }
         }
         function_table_tail = function_table_tail->pListNext;
@@ -55,14 +55,15 @@ void php_embed_cache_restore(TSRMLS_D)
         if ((*ce)->type == ZEND_USER_CLASS) {
             if (zend_hash_add(CG(class_table), class_table_tail->arKey, class_table_tail->nKeyLength, ce, sizeof(zend_class_entry*), NULL) == FAILURE &&
                 class_table_tail->arKey[0] != '\0') {
-                // CG(in_compilation) = 1;
-                // CG(compiled_filename) = file_handle->opened_path;
-                // #ifdef ZEND_ENGINE_2_4
-                // CG(zend_lineno) = (*ce)->info.user.line_start;
-                // #else
-                // CG(zend_lineno) = (*ce)->line_start;
-                // #endif
-                zend_error(E_ERROR, "Cannot redeclare class %s", class_table_tail->arKey);
+                CG(in_compilation) = 1;
+                #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4
+                CG(compiled_filename) = (char *)(*ce)->info.user.filename;
+                CG(zend_lineno) = (*ce)->info.user.line_start;
+                #else
+                CG(compiled_filename) = (char *)(*ce)->filename;
+                CG(zend_lineno) = (*ce)->line_start;
+                #endif
+                zend_error(E_ERROR, "Cannot redeclare class %s{}", (*ce)->name);
             }
         }
         class_table_tail = class_table_tail->pListNext;
