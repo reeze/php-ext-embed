@@ -22,14 +22,15 @@
 
 /* Main idea came from eAccelerator */
 
-HashTable embed_global_function_table;
-HashTable embed_global_class_table;
+static HashTable embed_global_function_table;
+static HashTable embed_global_class_table;
 
-Bucket *function_table_tail;
-Bucket *class_table_tail;
-HashTable* orig_function_table;
-HashTable* orig_class_table;
-HashTable* orig_eg_class_table;
+static Bucket    *function_table_tail;
+static Bucket    *class_table_tail;
+
+static HashTable *orig_function_table;
+static HashTable *orig_class_table;
+static HashTable *orig_eg_class_table;
 
 void php_embed_cache_restore(TSRMLS_D)
 {
@@ -39,8 +40,9 @@ void php_embed_cache_restore(TSRMLS_D)
     while (function_table_tail != NULL) {
         zend_op_array *op_array = (zend_op_array*)function_table_tail->pData;
         if (op_array->type == ZEND_USER_FUNCTION) {
-            if (zend_hash_add(CG(function_table), function_table_tail->arKey, function_table_tail->nKeyLength, op_array, sizeof(zend_op_array), NULL) == FAILURE &&
-                function_table_tail->arKey[0] != '\0') {
+            if (zend_hash_add(CG(function_table), function_table_tail->arKey, function_table_tail->nKeyLength,
+                    op_array, sizeof(zend_op_array), NULL) == FAILURE &&
+                    function_table_tail->arKey[0] != '\0') {
                 CG(in_compilation) = 1;
                 CG(compiled_filename) = (char *)op_array->filename;
                 CG(zend_lineno) = op_array->line_start;
@@ -53,8 +55,9 @@ void php_embed_cache_restore(TSRMLS_D)
     while (class_table_tail != NULL) {
         zend_class_entry **ce = (zend_class_entry**)class_table_tail->pData;
         if ((*ce)->type == ZEND_USER_CLASS) {
-            if (zend_hash_add(CG(class_table), class_table_tail->arKey, class_table_tail->nKeyLength, ce, sizeof(zend_class_entry*), NULL) == FAILURE &&
-                class_table_tail->arKey[0] != '\0') {
+            if (zend_hash_add(CG(class_table), class_table_tail->arKey, class_table_tail->nKeyLength,
+                    ce, sizeof(zend_class_entry*), NULL) == FAILURE &&
+                    class_table_tail->arKey[0] != '\0') {
                 CG(in_compilation) = 1;
                 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4
                 CG(compiled_filename) = (char *)(*ce)->info.user.filename;
