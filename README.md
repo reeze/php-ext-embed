@@ -10,8 +10,9 @@ Build Status:
 
 **Mixed-language programming with PHP and C!**
 
-php-ext-embed  is  a  tool  to  help  you  embed pieces of PHP script right into
-your php extension (which produced as `*.so`, written in C).
+php-ext-embed is a tool to help you embed sections of PHP script right into your
+php extension (which produced as `*.so` file, written in C).
+
 
 ## Why should I use
 
@@ -20,9 +21,10 @@ by  implementing  critical  algorithms in C under the most of circumstances, but
 around  which you need some business logic code to wrap it, which is always very
 complicated using Zend APIs that make the green hands trapped.
 
-Our  work  makes  the scripts of PHP lib implant into a specific extension file,
-then  you  could  only  write the performance critical part with C, and the rest
-with PHP. Finally, you got a single extension file without dependency.
+Our  work  let  you implant PHP lib into a specific extension file, then you can
+only write the performance critical part with C, and the rest with PHP. Finally,
+you  get  a  single extension `.so` file without any external phplib dependency,
+and get rid of all troubles of version incompatibility.
 
 It makes it much easier to maintain and distribute your extension.
 
@@ -31,13 +33,13 @@ It makes it much easier to maintain and distribute your extension.
 
 Please refer to
 [sample](https://github.com/reeze/php-ext-embed/tree/master/sample)  to  have  a
-quick view at our example extension.
+quick view at our sample extension.
 
 ### Quick start
 
 1. Clone this project.
 1. make.
-1. Now  the  extension  is  built  at  sample/modules/sample.so, add an entry in
+1. Now  the extension file is built at sample/modules/sample.so, add an entry in
    `php.ini` and try it out.
 1. Update scripts in sample/lib/\*.php files to test.
 
@@ -57,7 +59,7 @@ $ # add your logic
 
 ### Upgrade from your exist extension
 
-Only 7 lines changing needed to your extension.
+Only 7 additional lines is needed in your extension.
 
 1. Copy folder of this project to your extension root path.
 1. Add include instructions to your main file of extension at the top.
@@ -67,10 +69,14 @@ Only 7 lines changing needed to your extension.
     #include "php_ext_embed_libs.h"
     ```
 
-1. Add a macro to your RINIT function, in which "sample" is your module's name.
+1. Add macros that we provide to your SAPI functions to hook each stage, where
+   "sample" is your module's name.
 
     ```
+    PHP_EXT_EMBED_MINIT(sample);
+    PHP_EXT_EMBED_MSHUTDOWN(sample);
     PHP_EXT_EMBED_RINIT(sample);
+    PHP_EXT_EMBED_RSHUTDOWN(sample);
     ```
 
 1. add m4 inclusion in your config.m4 file
@@ -113,7 +119,7 @@ Windows is not supported yet.
 
 ### PHP versions
 
-PHP 5.2, 5.3, 5.4, 5.5, 5.6
+PHP 5.2, 5.3, 5.4, 5.5, 5.6.
 
 PHP 5.1 and below are not supported.
 
