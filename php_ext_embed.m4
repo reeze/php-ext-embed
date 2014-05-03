@@ -7,7 +7,7 @@ dnl
 PHP_ARG_WITH(libelf, with libelf path,
 [  --with-libelf   search libelf at this path], /usr)
 
-ext_embed_files_header=ext_embed_libs.h
+ext_embed_files_header=php_ext_embed_libs.h
 
 AC_DEFUN([PHP_EXT_EMBED_CHECK_VALID],[
   if test "$PHP_EXT_EMBED_DIR" = ""; then
@@ -20,7 +20,7 @@ dnl
 dnl PHP_EXT_EMBED_NEW_EXTENSION(extname, sources [, shared [, sapi_class [, extra-cflags [, cxx [, zend_ext]]]]])
 dnl
 dnl Includes an extension in the build.
-dnl 
+dnl
 dnl It is a wrapper for PHP_NEW_EXTENSION to inculude php_ext_embed.c
 dnl
 dnl "extname" is the name of the ext/ subdir where the extension resides.
@@ -29,7 +29,7 @@ dnl to build the extension.
 dnl "shared" can be set to "shared" or "yes" to build the extension as
 dnl a dynamically loadable library. Optional parameter "sapi_class" can
 dnl be set to "cli" to mark extension build only with CLI or CGI sapi's.
-dnl "extra-cflags" are passed to the compiler, with 
+dnl "extra-cflags" are passed to the compiler, with
 dnl @ext_srcdir@ and @ext_builddir@ being substituted.
 dnl "cxx" can be used to indicate that a C++ shared module is desired.
 dnl "zend_ext" indicates a zend extension.
@@ -74,7 +74,7 @@ AC_DEFUN([PHP_EXT_EMBED_INIT],[
   if [[ $? == 0 ]]; then
 	DEB_HOST_MULTIARCH=`dpkg-architecture -qDEB_HOST_MULTIARCH`
   fi
- 
+
   case $host_alias in
     *darwin*[)]
       ;;

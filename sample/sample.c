@@ -26,7 +26,7 @@
 #include <ext/standard/info.h>
 
 #include "php_ext_embed.h"
-#include "ext_embed_libs.h"
+#include "php_ext_embed_libs.h"
 
 #include "php_sample.h"
 
