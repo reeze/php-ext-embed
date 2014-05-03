@@ -22,5 +22,6 @@
 void php_embed_compile_string_init(TSRMLS_D);
 void php_embed_compile_string_finish(TSRMLS_D);
 void php_embed_cache_restore(TSRMLS_D);
+void php_embed_cache_clearup(TSRMLS_D);
 
 #endif

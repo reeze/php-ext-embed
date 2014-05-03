@@ -73,6 +73,14 @@ void php_embed_cache_restore(TSRMLS_D)
     }
 }
 
+void php_embed_cache_clearup(TSRMLS_D)
+{
+    embed_global_function_table.pDestructor = NULL;
+    embed_global_class_table.pDestructor = NULL;
+    zend_hash_destroy(&embed_global_function_table);
+    zend_hash_destroy(&embed_global_class_table);
+}
+
 void php_embed_compile_string_init(TSRMLS_D)
 {
     zend_hash_init(&embed_global_function_table, 32, NULL, ZEND_FUNCTION_DTOR, 1);
