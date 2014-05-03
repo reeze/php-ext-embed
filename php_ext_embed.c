@@ -164,6 +164,7 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 	static unsigned int include_times = 0;
 	include_times++;
 
+	int bailout = 0;
 	static char bin_path[MAX_PATH_LEN] = {0};
 
 	if (bin_path[0] == '\0') {
@@ -183,7 +184,16 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 	/* first time, compile scripts and cache it */
 	if (include_times == 1) {
 		php_embed_compile_string_init(TSRMLS_C);
-		php_embed_compile_string(bin_path, embed_files TSRMLS_CC);
+		bailout = 0;
+		zend_try {
+			php_embed_compile_string(bin_path, embed_files TSRMLS_CC);
+		} zend_catch {
+			bailout = 1;
+			php_embed_compile_string_finish(TSRMLS_C);
+		} zend_end_try();
+		if (bailout) {
+			zend_bailout();
+		}
 		php_embed_compile_string_finish(TSRMLS_C);
 	}
 
