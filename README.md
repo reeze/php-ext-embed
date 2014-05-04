@@ -108,12 +108,17 @@ compile one to your custom directory and try:
 
 ## Support
 
+### Issues
+
+If you encounter any problem, feel free to fill an issue <https://github.com/reeze/php-ext-embed/issues>.
+
 ### Operating systems
 
 Tested in these operating systems.
 
 1. RedHat 4+
-2. Mac OS X 10.9+
+1. Ubunut 12+
+1. Mac OS X 10.9+
 
 Windows is not supported yet.
 
@@ -123,7 +128,7 @@ PHP 5.2, 5.3, 5.4, 5.5, 5.6.
 
 PHP 5.1 and below are not supported.
 
-HHVM is not supported (and not needed because of the language `Hack`).
+HHVM is not supported (The original idea came from HHVM, it support embed lib already).
 
 
 ## Limitations
