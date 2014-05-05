@@ -38,3 +38,13 @@ int php_embed_compile_string(char *bin_path, php_ext_lib_entry *embed_files TSRM
 int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 
 #endif
+
+
+/*
+ * Local variables:
+ * tab-width: 4
+ * c-basic-offset: 4
+ * End:
+ * vim600: noet sw=4 ts=4 fdm=marker
+ * vim<600: noet sw=4 ts=4
+ */
