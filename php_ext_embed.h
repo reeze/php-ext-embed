@@ -32,7 +32,7 @@ typedef struct _php_ext_lib_entry {
 } php_ext_lib_entry;
 
 #define PHP_EXT_EMBED_MINIT(extname)		php_embed_startup(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
-#define PHP_EXT_EMBED_RINIT(extname)		php_embed_do_include_files(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
+#define PHP_EXT_EMBED_RINIT(extname)		php_embed_cache_restore(TSRMLS_C)
 #define PHP_EXT_EMBED_RSHUTDOWN(extname)
 #define PHP_EXT_EMBED_MSTUTDOWN(extname)	php_embed_shutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 

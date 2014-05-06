@@ -155,15 +155,13 @@ static zval* get_embed_data(char *bin_path, php_ext_lib_entry *entry TSRMLS_DC)
 
 int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
+	php_embed_do_include_files(extname, embed_files TSRMLS_CC);
 	return SUCCESS;
 }
 
 
 int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
-	static unsigned int include_times = 0;
-	include_times++;
-
 	int bailout = 0;
 	static char bin_path[MAX_PATH_LEN] = {0};
 
@@ -181,24 +179,18 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 #endif
 	}
 
-	/* first time, compile scripts and cache it */
-	if (include_times == 1) {
-		php_embed_compile_string_init(TSRMLS_C);
-		bailout = 0;
-		zend_try {
-			php_embed_compile_string(bin_path, embed_files TSRMLS_CC);
-		} zend_catch {
-			bailout = 1;
-			php_embed_compile_string_finish(TSRMLS_C);
-		} zend_end_try();
-		if (bailout) {
-			zend_bailout();
-		}
+	php_embed_compile_string_init(TSRMLS_C);
+	bailout = 0;
+	zend_try {
+		php_embed_compile_string(bin_path, embed_files TSRMLS_CC);
+	} zend_catch {
+		bailout = 1;
 		php_embed_compile_string_finish(TSRMLS_C);
+	} zend_end_try();
+	if (bailout) {
+		zend_bailout();
 	}
-
-	/* restore from cache */
-	php_embed_cache_restore(TSRMLS_C);
+	php_embed_compile_string_finish(TSRMLS_C);
 
 	return SUCCESS;
 }
