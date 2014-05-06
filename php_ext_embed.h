@@ -21,6 +21,10 @@
 #ifndef _PHP_EXT_EMBED_H_
 #define _PHP_EXT_EMBED_H_
 
+#if PHP_MAJOR_VERSION == 4 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION < 2)
+#error "php_ext_embed only supports PHP 5.2 and higher"
+#endif
+
 typedef struct _php_ext_lib_entry {
 	const char *filename;
 	const char *dummy_filename;

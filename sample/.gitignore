@@ -1,6 +1,6 @@
 *.o
 config.h
-ext_embed_libs.h
+php_ext_embed_libs.h
 *lot
 *.lo
 *.la
