@@ -95,7 +95,7 @@ void php_embed_compile_string_init(TSRMLS_D)
 	orig_eg_class_table = EG(class_table);;
 	EG(class_table) = &embed_global_class_table;
 
-	zend_hash_init(&CG(filenames_table), 32, NULL, ZEND_FUNCTION_DTOR, 1);
+	zend_hash_init(&CG(filenames_table), 5, NULL, (dtor_func_t) free_estring, 0);
 
 	function_table_tail = CG(function_table)->pListTail;
 	class_table_tail = CG(class_table)->pListTail;
