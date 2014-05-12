@@ -75,7 +75,7 @@ void php_embed_cache_restore(TSRMLS_D)
 	}
 }
 
-void php_embed_cache_clearup(TSRMLS_D)
+void php_embed_cache_cleanup(TSRMLS_D)
 {
 	embed_global_function_table.pDestructor = NULL;
 	embed_global_class_table.pDestructor = NULL;

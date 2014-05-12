@@ -235,7 +235,7 @@ int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRML
 
 	}
 
-	php_embed_cache_clearup(TSRMLS_C);
+	php_embed_cache_cleanup(TSRMLS_C);
 
 	return 0;
 }
