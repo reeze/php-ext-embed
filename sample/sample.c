@@ -94,7 +94,7 @@ PHP_MINIT_FUNCTION(sample)
  */
 PHP_MSHUTDOWN_FUNCTION(sample)
 {
-	PHP_EXT_EMBED_MSTUTDOWN(sample);
+	PHP_EXT_EMBED_MSHUTDOWN(sample);
 
     return SUCCESS;
 }
