@@ -36,7 +36,6 @@
 
 struct php_ext_embed_stream_data_t {
 	php_ext_lib_entry *entry;
-	php_stream *stream;
 };
 
 php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
@@ -68,9 +67,13 @@ php_ext_embed_wrapper ext_embed_wrapper = {
 	PHP_EXT_EMBED_API_NO
 };
 
-static php_ext_lib_entry* get_entry_from_path(php_ext_lib_entry *head, const char *path)
+static php_ext_lib_entry* get_entry_from_path(HashTable *embeded_entries, const char *path)
 {
-	// TODO hash lookup
+	php_ext_lib_entry *entry = NULL;
+	if (zend_hash_find(embeded_entries, (char *)path, strlen(path) + 1, (void **)&entry) == SUCCESS) {
+		return entry;
+	}
+
 	return NULL;
 }
 
@@ -260,7 +263,7 @@ static int ext_embed_ops_stat(php_stream *stream, php_stream_statbuf *ssb TSRMLS
 	}
 
 	if (!self->entry) {
-		self->entry = get_entry_from_path(self->entry->head, path);
+		return -1;
 	}
 
 	memset(ssb, 0, sizeof(php_stream_statbuf));
@@ -303,11 +306,15 @@ php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
 {
 	php_stream *stream = NULL;
 	struct php_ext_embed_stream_data_t *self;
-
-	php_ext_lib_entry *entry = NULL;
+	php_ext_embed_wrapper *embed_wrapper = (php_ext_embed_wrapper *)wrapper;
 
 	self = emalloc(sizeof(*self));
-	self->stream = NULL;
+
+	self->entry = get_entry_from_path(&embed_wrapper->embeded_entries, path);
+	if (!self->entry) {
+		// Not found
+		return NULL;
+	}
 
 	stream = php_stream_alloc(&php_stream_ext_embedio_ops, self, NULL, mode);
 

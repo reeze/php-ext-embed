@@ -26,8 +26,8 @@
 #include <unistd.h>
 #include <time.h>
 
-#define PHP_EXT_EMBED_VERSION		"0.1.0"
-#define PHP_EXT_EMBED_API_NO		10140518
+#define PHP_EXT_EMBED_VERSION		"1.0.0"
+#define PHP_EXT_EMBED_API_NO		100140518
 
 #define PHP_EXT_EMBED_PROTO_NAME	"extension-embed"
 
