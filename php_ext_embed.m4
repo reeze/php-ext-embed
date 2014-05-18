@@ -137,7 +137,7 @@ dnl
 dnl "extname" is the name of the ext/ subdir where the extension resides.
 dnl "sources" is a list of files relative to the subdir which need to be
 dnl           embeded to extension
-AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIBS],[
+AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIB],[
   php_ext_upper_name=translit($1,a-z-,A-Z_)
   AC_MSG_RESULT(Generate embed files header)
   echo "" > $ext_embed_files_header
