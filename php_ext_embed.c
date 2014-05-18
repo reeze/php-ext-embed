@@ -56,6 +56,10 @@ int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS
 int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	ENTRY_FOREACH(embed_files, entry) {
+		if (!entry->include_on_rinit) {
+			continue;
+		}
+
 		entry->head = embed_files;
 		zend_file_handle file_handle;
 
