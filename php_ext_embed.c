@@ -22,8 +22,6 @@
 #include "php_ext_embed.h"
 
 extern php_ext_embed_wrapper ext_embed_wrapper;
-
-
 extern int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry);
 
 /*
@@ -33,16 +31,16 @@ extern int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entr
 int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_embed_wrapper *wrapper;
-	wrapper = (php_ext_embed_wrapper *)php_stream_locate_url_wrapper("extension-embed://dummy-ext/file.php",
+	wrapper = (php_ext_embed_wrapper *)php_stream_locate_url_wrapper(PHP_EXT_EMBED_PROTO_NAME "://dummy-ext/file.php",
 		NULL, STREAM_LOCATE_WRAPPERS_ONLY TSRMLS_CC);
 
 	if (!wrapper) {
 		wrapper = &ext_embed_wrapper;
 		zend_hash_init(&wrapper->embeded_entries, 0, NULL, NULL, 1);
-		php_register_url_stream_wrapper("extension-embed", (php_stream_wrapper *)&ext_embed_wrapper TSRMLS_CC);
+		php_register_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME, (php_stream_wrapper *)&ext_embed_wrapper TSRMLS_CC);
 	}
 
-	// merge embeded libs to php global wrapper instance to speedup lookup
+	/* merge embeded libs to php global wrapper instance to speedup lookup */
 	ENTRY_FOREACH(embed_files, entry) {
 		if (php_ext_embed_init_entry(&wrapper->embeded_entries, entry) == SUCCESS) {
 			zend_hash_add(&wrapper->embeded_entries, entry->dummy_filename,
@@ -69,7 +67,7 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 
 		zend_op_array *op_array = zend_compile_file(&file_handle, ZEND_INCLUDE TSRMLS_CC);
 
-		/* We Just compile it to import class & function for now */
+		/* We just compile it to import class & function for now */
 		if (op_array != NULL) {
 			destroy_op_array(op_array TSRMLS_CC);
 			efree(op_array);
@@ -82,11 +80,11 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_embed_wrapper *wrapper;
-	wrapper = (php_ext_embed_wrapper *)php_stream_locate_url_wrapper("extension-embed://dummy-ext/file.php",
+	wrapper = (php_ext_embed_wrapper *)php_stream_locate_url_wrapper(PHP_EXT_EMBED_PROTO_NAME "://dummy-ext/file.php",
 		NULL, STREAM_LOCATE_WRAPPERS_ONLY TSRMLS_CC);
 	if (wrapper) {
 		zend_hash_destroy(&wrapper->embeded_entries);
-		php_unregister_url_stream_wrapper("extension-embed" TSRMLS_CC);
+		php_unregister_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME TSRMLS_CC);
 	}
 
 	return SUCCESS;

@@ -28,14 +28,9 @@
 #include <gelf.h>
 #endif
 
-#include "php.h"
-
+#include <php.h>
+#include <php_streams.h>
 #include <Zend/zend_ini.h>
-
-#include "php_streams.h"
-#include "ext/standard/file.h"
-#include "ext/standard/php_string.h"
-#include "fopen_wrappers.h"
 
 #include "php_ext_embed.h"
 
@@ -201,16 +196,13 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 #define STREAM_DATA_FROM_STREAM() \
 	struct php_ext_embed_stream_data_t *self = (struct php_ext_embed_stream_data_t *) stream->abstract;
 
-
 /* {{{ ext_embed_ops_read */
 static size_t ext_embed_ops_read(php_stream *stream, char *buf, size_t count TSRMLS_DC)
 {
 	ssize_t n = 0;
-	size_t code_len = 0;
 	char bin_path[MAXPATHLEN];
 
 	STREAM_DATA_FROM_STREAM();
-
 	get_bin_path(self->entry, bin_path);
 
 	n = read_entry_data(self->entry, buf, count);
@@ -294,33 +286,12 @@ static int ext_embed_ops_stat(php_stream *stream, php_stream_statbuf *ssb TSRMLS
 php_stream_ops php_stream_ext_embedio_ops = {
 	ext_embed_ops_write, ext_embed_ops_read,
 	ext_embed_ops_close, ext_embed_ops_flush,
-	"extension-embed",
+	PHP_EXT_EMBED_PROTO_NAME,
 	NULL, /* seek */
 	NULL, /* cast */
 	ext_embed_ops_stat, /* stat */
 	NULL  /* set_option */
 };
-
-/* {{{ php_stream_zip_open */
-php_stream *php_stream_ext_embed_open(char *filename, char *path, char *mode STREAMS_DC TSRMLS_DC)
-{
-	int err = 0;
-
-	php_stream *stream = NULL;
-	struct php_ext_embed_stream_data_t *self;
-
-	if (filename) {
-		self = emalloc(sizeof(*self));
-		self->stream = NULL;
-		stream = php_stream_alloc(&php_stream_ext_embedio_ops, self, NULL, mode);
-		stream->orig_path = estrdup(path);
-
-		return stream;
-	}
-
-	return NULL;
-}
-/* }}} */
 
 /* {{{ php_stream_ext_embed_opener */
 php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
@@ -330,16 +301,6 @@ php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
 											char **opened_path,
 											php_stream_context *context STREAMS_DC TSRMLS_DC)
 {
-	int path_len;
-
-	char *file_basename;
-	size_t file_basename_len;
-	char file_dirname[MAXPATHLEN];
-
-	char *fragment;
-	int fragment_len;
-	int err;
-
 	php_stream *stream = NULL;
 	struct php_ext_embed_stream_data_t *self;
 
@@ -348,7 +309,7 @@ php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
 	self = emalloc(sizeof(*self));
 	self->stream = NULL;
 
-	stream = php_stream_alloc(&php_stream_ext_embed_opener, self, NULL, mode);
+	stream = php_stream_alloc(&php_stream_ext_embedio_ops, self, NULL, mode);
 
 	if (opened_path) {
 		*opened_path = estrdup(path);

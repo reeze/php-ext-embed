@@ -26,15 +26,17 @@
 #include <unistd.h>
 #include <time.h>
 
-#define PHP_EXT_EMBED_VERSION "0.1.0"
-#define PHP_EXT_EMBED_API_NO 100518
+#define PHP_EXT_EMBED_VERSION		"0.1.0"
+#define PHP_EXT_EMBED_API_NO		10140518
+
+#define PHP_EXT_EMBED_PROTO_NAME	"extension-embed"
 
 #if PHP_MAJOR_VERSION == 4 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION < 2)
 #error "php_ext_embed only supports PHP 5.2 and higher"
 #endif
 
 #define ENTRY_FOREACH(embed_files, entry) \
-	php_ext_lib_entry *entry = NULL;	\
+	php_ext_lib_entry *entry = NULL; \
 	for (entry = embed_files; entry->filename != NULL; (embed_files++), entry = embed_files)
 
 typedef struct _php_ext_embed_wrapper {
