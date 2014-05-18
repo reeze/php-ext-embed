@@ -83,7 +83,7 @@ static void get_bin_path(php_ext_lib_entry *entry, char *buf)
 	snprintf(buf, MAXPATHLEN, "%s/%s.so", INI_STR("extension_dir"), entry->extname);
 }
 
-static size_t read_entry_data(php_ext_lib_entry *entry, char *buf, size_t size)
+static ssize_t read_entry_data(php_ext_lib_entry *entry, char *buf, size_t size)
 {
 	char bin_path[MAXPATHLEN];
 	int fd = -1;
@@ -98,9 +98,8 @@ static size_t read_entry_data(php_ext_lib_entry *entry, char *buf, size_t size)
 	}
 
 	lseek(fd, entry->info.offset, SEEK_SET);
-	read(fd, buf, read_len);
 
-	return read_len;
+	return read(fd, buf, read_len);
 }
 
 int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry)
@@ -179,8 +178,8 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 				elf_end(e); 
 				return FAILURE;
 			}
-			stat.offset = ghdr.sh_offset;
-			stat.size = ghdr.sh_size;
+			entry->info.offset = ghdr.sh_offset;
+			entry->info.size = ghdr.sh_size;
 			break;
 		}
 	}
@@ -214,7 +213,7 @@ static size_t ext_embed_ops_read(php_stream *stream, char *buf, size_t count TSR
 		return 0;
 	}
 
-	if (n == 0 || n < (ssize_t)count || (n == self->entry->info.size)) {
+	if (n == 0 || n < count || (n == self->entry->info.size)) {
 		stream->eof = 1;
 	}
 
