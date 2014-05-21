@@ -60,7 +60,6 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 			continue;
 		}
 
-		entry->head = embed_files;
 		zend_file_handle file_handle;
 
 		file_handle.type = ZEND_HANDLE_FILENAME;
@@ -69,9 +68,9 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 		file_handle.free_filename = 0;
 		file_handle.opened_path = NULL;
 
+		/* We just compile it to import class & function for now */
 		zend_op_array *op_array = zend_compile_file(&file_handle, ZEND_INCLUDE TSRMLS_CC);
 
-		/* We just compile it to import class & function for now */
 		if (op_array != NULL) {
 			destroy_op_array(op_array TSRMLS_CC);
 			efree(op_array);

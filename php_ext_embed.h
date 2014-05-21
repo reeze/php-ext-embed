@@ -57,7 +57,6 @@ typedef struct _php_ext_lib_entry {
 	const char *dummy_filename;
 	const char *section_name;
 	int include_on_rinit;			 /* it allow user embed but not include, yes for future */
-	struct _php_ext_lib_entry *head; /* List head of current extension for iteration */
 	HashTable  *embeded_entries;	 /* Global embeded file entry hastable for reference */
 	php_ext_lib_stat info;
 } php_ext_lib_entry;
