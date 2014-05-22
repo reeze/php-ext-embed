@@ -61,7 +61,7 @@ int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS
 	ENTRY_FOREACH(embed_files, entry) {
 		if (php_ext_embed_init_entry(&wrapper->embeded_entries, entry) == SUCCESS) {
 			zend_hash_add(&wrapper->embeded_entries, entry->dummy_filename,
-					strlen(entry->dummy_filename) + 1, entry, sizeof(entry), NULL);
+					strlen(entry->dummy_filename) + 1, &entry, sizeof(entry), NULL);
 		} else {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed to init lib: %s", entry->dummy_filename);
 		}

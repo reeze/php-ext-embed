@@ -37,6 +37,7 @@
 
 struct php_ext_embed_stream_data_t {
 	php_ext_lib_entry *entry;
+	size_t cursor;
 };
 
 php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
@@ -70,9 +71,9 @@ php_ext_embed_wrapper ext_embed_wrapper = {
 
 static php_ext_lib_entry* get_entry_from_path(HashTable *embeded_entries, const char *path)
 {
-	php_ext_lib_entry *entry = NULL;
+	php_ext_lib_entry **entry = NULL;
 	if (zend_hash_find(embeded_entries, (char *)path, strlen(path) + 1, (void **)&entry) == SUCCESS) {
-		return entry;
+		return *entry;
 	}
 
 	return NULL;
@@ -84,12 +85,12 @@ static void get_bin_path(php_ext_lib_entry *entry, char *buf)
 	snprintf(buf, MAXPATHLEN, "%s/%s.so", INI_STR("extension_dir"), entry->extname);
 }
 
-static ssize_t read_entry_data(php_ext_lib_entry *entry, char *buf, size_t size)
+static ssize_t read_entry_data(php_ext_lib_entry *entry, size_t offset, char *buf, size_t size)
 {
 	char bin_path[MAXPATHLEN];
 	int fd = -1;
 
-	size_t read_len = (entry->info.size > size) ? size : entry->info.size;
+	size_t read_len = ((entry->info.size - offset > size) ? size : (entry->info.size - offset));
 
 	get_bin_path(entry, bin_path);
 	fd = open(bin_path, O_RDONLY);
@@ -98,7 +99,7 @@ static ssize_t read_entry_data(php_ext_lib_entry *entry, char *buf, size_t size)
 		return FAILURE;
 	}
 
-	lseek(fd, entry->info.offset, SEEK_SET);
+	lseek(fd, entry->info.offset + offset, SEEK_SET);
 
 	return read(fd, buf, read_len);
 }
@@ -108,6 +109,9 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 	char bin_path[MAXPATHLEN];
 	struct timeval tv;
 	get_bin_path(entry, bin_path);
+
+	entry->info.offset = 0;
+	entry->info.size = 0;
 
 #ifdef __APPLE__
 	int i, count = _dyld_image_count();
@@ -186,6 +190,7 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 #endif
 
 section_found:
+
 	gettimeofday(&tv, NULL);
 
 	entry->info.m_time = tv.tv_sec;
@@ -201,12 +206,10 @@ section_found:
 static size_t ext_embed_ops_read(php_stream *stream, char *buf, size_t count TSRMLS_DC)
 {
 	ssize_t n = 0;
-	char bin_path[MAXPATHLEN];
 
 	STREAM_DATA_FROM_STREAM();
-	get_bin_path(self->entry, bin_path);
 
-	n = read_entry_data(self->entry, buf, count);
+	n = read_entry_data(self->entry, self->cursor, buf, count);
 
 	if (n < 0) {
 		return 0;
@@ -215,6 +218,8 @@ static size_t ext_embed_ops_read(php_stream *stream, char *buf, size_t count TSR
 	if (n == 0 || n < count || (n == self->entry->info.size)) {
 		stream->eof = 1;
 	}
+
+	self->cursor += n;
 
 	return (n < 1 ? 0 : n);
 }
@@ -307,10 +312,11 @@ php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
 	php_ext_embed_wrapper *embed_wrapper = (php_ext_embed_wrapper *)wrapper;
 
 	self = emalloc(sizeof(*self));
+	self->cursor = 0;
 
 	self->entry = get_entry_from_path(&embed_wrapper->embeded_entries, path);
 	if (!self->entry) {
-		// Not found
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Embeded lib file not found: %s", path);
 		return NULL;
 	}
 

@@ -9,4 +9,4 @@ echo($rf->getFileName());
 --EXPECTF--
 The Money!
 NULL
-extension://sample/lib/sample.class.php
+extension-embed://sample/lib/sample.class.php

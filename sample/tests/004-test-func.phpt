@@ -5,4 +5,4 @@ Test Function
 sample_lib_func();
 ?>
 --EXPECTF--
-sample_lib_func: It' works! at: extension://sample/lib/sample.php:5
+sample_lib_func: It' works! at: extension-embed://sample/lib/sample.php:5
