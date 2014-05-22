@@ -24,6 +24,17 @@
 extern php_ext_embed_wrapper ext_embed_wrapper;
 extern int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry);
 
+static php_ext_embed_wrapper* find_registered_wrapper()
+{
+	const HashTable *wrappers = php_stream_get_url_stream_wrappers_hash_global();
+	php_ext_embed_wrapper *wrapper = NULL;
+
+	zend_hash_find(wrappers, (char *)PHP_EXT_EMBED_PROTO_NAME,
+		sizeof(PHP_EXT_EMBED_PROTO_NAME), (void **)&wrapper);
+
+	return wrapper;
+}
+
 /*
  * Register 'extension-embed' stream wrapper, then we could transpantly load php
  * lib file without need to mannually cache classes/functions to improve speed
@@ -31,13 +42,19 @@ extern int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entr
 int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_embed_wrapper *wrapper;
-	wrapper = (php_ext_embed_wrapper *)php_stream_locate_url_wrapper(PHP_EXT_EMBED_PROTO_NAME "://dummy-ext/file.php",
-		NULL, STREAM_LOCATE_WRAPPERS_ONLY TSRMLS_CC);
+	wrapper = (php_ext_embed_wrapper *)find_registered_wrapper();
 
 	if (!wrapper) {
 		wrapper = &ext_embed_wrapper;
 		zend_hash_init(&wrapper->embeded_entries, 0, NULL, NULL, 1);
-		php_register_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME, (php_stream_wrapper *)&ext_embed_wrapper TSRMLS_CC);
+		int ret = php_register_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME,
+			(php_stream_wrapper *)&ext_embed_wrapper TSRMLS_CC);
+
+		if (ret == FAILURE) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed to startup php-ext-embed:"
+				"Failed to register extension-embed stream wrapper to PHP");
+			return FAILURE;
+		}
 	}
 
 	/* merge embeded libs to php global wrapper instance to speedup lookup */
@@ -83,8 +100,8 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_embed_wrapper *wrapper;
-	wrapper = (php_ext_embed_wrapper *)php_stream_locate_url_wrapper(PHP_EXT_EMBED_PROTO_NAME "://dummy-ext/file.php",
-		NULL, STREAM_LOCATE_WRAPPERS_ONLY TSRMLS_CC);
+	wrapper = (php_ext_embed_wrapper *)find_registered_wrapper();
+
 	if (wrapper) {
 		zend_hash_destroy(&wrapper->embeded_entries);
 		php_unregister_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME TSRMLS_CC);

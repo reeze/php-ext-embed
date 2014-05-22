@@ -19,6 +19,7 @@
 /* $Id$ */
 
 #include <fcntl.h>
+#include <sys/time.h>
 
 #ifdef __APPLE__
 #include <mach-o/getsect.h>
@@ -104,9 +105,8 @@ static ssize_t read_entry_data(php_ext_lib_entry *entry, char *buf, size_t size)
 
 int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry)
 {
-	static time_t time_on_load = 0;
-
 	char bin_path[MAXPATHLEN];
+	struct timeval tv;
 	get_bin_path(entry, bin_path);
 
 #ifdef __APPLE__
@@ -123,11 +123,11 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 		if (section) {
 			entry->info.offset = section->offset;
 			entry->info.size = section->size;
-			break; 
-		} else {
-			return FAILURE;
+			goto section_found;
 		}
-	}   
+	}
+
+	return FAILURE;
 
 #else
 	GElf_Shdr shdr;
@@ -180,16 +180,15 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 			}
 			entry->info.offset = ghdr.sh_offset;
 			entry->info.size = ghdr.sh_size;
-			break;
+			goto section_found;
 		}
 	}
 #endif
 
-	if (time_on_load == 0) {
-		time_on_load = mktime(NULL);
-	}
+section_found:
+	gettimeofday(&tv, NULL);
 
-	entry->info.m_time = time_on_load;
+	entry->info.m_time = tv.tv_sec;
 	entry->embeded_entries = embeded_entries; /* Reference back for lookup */
 
 	return SUCCESS;
