@@ -182,6 +182,7 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 				elf_end(e); 
 				return FAILURE;
 			}
+			elf_end(e);
 			entry->info.offset = ghdr.sh_offset;
 			entry->info.size = ghdr.sh_size;
 			goto section_found;

@@ -103,7 +103,6 @@ int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRML
 	wrapper = (php_ext_embed_wrapper *)find_registered_wrapper();
 
 	if (wrapper) {
-		zend_hash_destroy(&wrapper->embeded_entries);
 		php_unregister_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME TSRMLS_CC);
 	}
 
