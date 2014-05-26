@@ -162,7 +162,6 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIB],[
   for ac_src in $2; do
     if test -f "$ac_src"; then
       dummy_filename="extension-embed://$1/$ac_src"
-      dnl TODO Linux
       section_name=ext.`echo $dummy_filename | $MD5_CMD`
       section_name=${section_name:0:16}
       echo "  {"            >> $ext_embed_files_header
@@ -171,7 +170,6 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIB],[
       echo "    \"$dummy_filename\"",  >> $ext_embed_files_header
       echo "    \"$section_name\"",    >> $ext_embed_files_header
       echo "    1",    >> $ext_embed_files_header
-      echo "    NULL,"    >> $ext_embed_files_header
       echo "  },"            >> $ext_embed_files_header
 
       PHP_GLOBAL_OBJS="$PHP_GLOBAL_OBJS $ac_src"

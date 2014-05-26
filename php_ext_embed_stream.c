@@ -192,8 +192,8 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 
 section_found:
 
+	/* Fake m_time since it wont change anyway */
 	gettimeofday(&tv, NULL);
-
 	entry->info.m_time = tv.tv_sec;
 
 	return SUCCESS;
