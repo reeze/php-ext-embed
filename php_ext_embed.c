@@ -70,7 +70,7 @@ int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS
 	return SUCCESS;
 }
 
-int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
+static int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	ENTRY_FOREACH(embed_files, entry) {
 		if (!entry->include_on_rinit) {
@@ -94,6 +94,16 @@ int php_embed_do_include_files(const char *extname, php_ext_lib_entry *embed_fil
 		}
 	}
 
+	return SUCCESS;
+}
+
+int php_embed_rinit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
+{
+	return php_embed_do_include_files(extname, embed_files TSRMLS_CC);
+}
+
+int php_embed_rshutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
+{
 	return SUCCESS;
 }
 
