@@ -10,4 +10,6 @@ test: all
 	@$(MAKE) -C sample test
 
 clean: sample/config.m4
+	rm -rf .libs
+	rm -rf *.lo
 	@$(MAKE) -C sample clean
