@@ -195,7 +195,6 @@ section_found:
 	gettimeofday(&tv, NULL);
 
 	entry->info.m_time = tv.tv_sec;
-	entry->embeded_entries = embeded_entries; /* Reference back for lookup */
 
 	return SUCCESS;
 }

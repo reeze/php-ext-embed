@@ -27,7 +27,7 @@
 #include <time.h>
 
 #define PHP_EXT_EMBED_VERSION		"1.0.0"
-#define PHP_EXT_EMBED_API_NO		10000140518
+#define PHP_EXT_EMBED_API_NO		10000
 
 #define PHP_EXT_EMBED_PROTO_NAME	"extension-embed"
 
@@ -65,7 +65,6 @@ typedef struct _php_ext_lib_entry {
 	const char *dummy_filename;			/* internal filename */
 	const char *section_name;			/* The section name of the embed file*/
 	int include_on_rinit;			 	/* it allow user embed but not include, yes for future */
-	HashTable  *embeded_entries;	 	/* Global embeded file entry hastable for reference */
 	php_ext_lib_stat info;
 } php_ext_lib_entry;
 
