@@ -151,9 +151,7 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 
 	Elf* e = elf_begin(fd, ELF_C_READ, NULL);
 	if (e == NULL || elf_kind(e) != ELF_K_ELF) {
-		close(fd);
-		elf_end(e); 
-		return FAILURE;
+		goto failed_and_clean;
 	}
 
 #ifdef HAVE_ELF_GETSHDRSTRNDX
@@ -163,25 +161,19 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 #endif
 
 	if (stat < 0 || shstrndx == -1) {
-		close(fd);
-		elf_end(e); 
-		return FAILURE;
+		goto failed_and_clean;
 	}
 
 	scn = NULL;
 	while ((scn = elf_nextscn(e, scn)) != NULL) {
 		if (gelf_getshdr(scn, &shdr) != &shdr ||
 				!(name = elf_strptr(e, shstrndx , shdr.sh_name))) {
-			close(fd);
-			elf_end(e); 
-			return FAILURE;
+			goto failed_and_clean;
 		}
 		if (!strcmp(entry->section_name, name)) {
 			GElf_Shdr ghdr;
 			if (gelf_getshdr(scn, &ghdr) != &ghdr) {
-				close(fd);
-				elf_end(e); 
-				return FAILURE;
+				goto failed_and_clean;
 			}
 			elf_end(e);
 			entry->stat.offset = ghdr.sh_offset;
@@ -189,6 +181,11 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 			goto section_found;
 		}
 	}
+failed_and_clean:
+	close(fd);
+	elf_end(e);
+	return FAILURE;
+
 #endif
 
 section_found:
