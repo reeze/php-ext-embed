@@ -91,7 +91,7 @@ static ssize_t read_entry_data(php_ext_lib_entry *entry, size_t offset, char *bu
 	char bin_path[MAXPATHLEN];
 	int fd = -1;
 
-	size_t read_len = ((entry->info.size - offset > size) ? size : (entry->info.size - offset));
+	size_t read_len = ((entry->stat.size - offset > size) ? size : (entry->stat.size - offset));
 
 	get_bin_path(entry, bin_path);
 	fd = open(bin_path, O_RDONLY);
@@ -100,7 +100,7 @@ static ssize_t read_entry_data(php_ext_lib_entry *entry, size_t offset, char *bu
 		return FAILURE;
 	}
 
-	lseek(fd, entry->info.offset + offset, SEEK_SET);
+	lseek(fd, entry->stat.offset + offset, SEEK_SET);
 
 	return read(fd, buf, read_len);
 }
@@ -111,8 +111,8 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 	struct timeval tv;
 	get_bin_path(entry, bin_path);
 
-	entry->info.offset = 0;
-	entry->info.size = 0;
+	entry->stat.offset = 0;
+	entry->stat.size = 0;
 
 #ifdef __APPLE__
 	int i, count = _dyld_image_count();
@@ -126,8 +126,8 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 #endif
 
 		if (section) {
-			entry->info.offset = section->offset;
-			entry->info.size = section->size;
+			entry->stat.offset = section->offset;
+			entry->stat.size = section->size;
 			goto section_found;
 		}
 	}
@@ -184,8 +184,8 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 				return FAILURE;
 			}
 			elf_end(e);
-			entry->info.offset = ghdr.sh_offset;
-			entry->info.size = ghdr.sh_size;
+			entry->stat.offset = ghdr.sh_offset;
+			entry->stat.size = ghdr.sh_size;
 			goto section_found;
 		}
 	}
@@ -195,7 +195,7 @@ section_found:
 
 	/* Fake m_time since it wont change anyway */
 	gettimeofday(&tv, NULL);
-	entry->info.m_time = tv.tv_sec;
+	entry->stat.m_time = tv.tv_sec;
 
 	return SUCCESS;
 }
@@ -216,7 +216,7 @@ static size_t ext_embed_ops_read(php_stream *stream, char *buf, size_t count TSR
 		return 0;
 	}
 
-	if (n == 0 || n < count || (n == self->entry->info.size)) {
+	if (n == 0 || n < count || (n == self->entry->stat.size)) {
 		stream->eof = 1;
 	}
 
@@ -272,16 +272,16 @@ static int ext_embed_ops_stat(php_stream *stream, php_stream_statbuf *ssb TSRMLS
 
 	memset(ssb, 0, sizeof(php_stream_statbuf));
 	if (path[path_len-1] != '/') {
-		ssb->sb.st_size = self->entry->info.size;
+		ssb->sb.st_size = self->entry->stat.size;
 		ssb->sb.st_mode |= S_IFREG; /* regular file */
 	} else {
 		ssb->sb.st_size = 0;
 		ssb->sb.st_mode |= S_IFDIR; /* regular directory */
 	}
 
-	ssb->sb.st_mtime = self->entry->info.m_time;
-	ssb->sb.st_atime = self->entry->info.m_time;
-	ssb->sb.st_ctime = self->entry->info.m_time;
+	ssb->sb.st_mtime = self->entry->stat.m_time;
+	ssb->sb.st_atime = self->entry->stat.m_time;
+	ssb->sb.st_ctime = self->entry->stat.m_time;
 	ssb->sb.st_nlink = 1;
 	ssb->sb.st_rdev = -1;
 	ssb->sb.st_ino = -1;

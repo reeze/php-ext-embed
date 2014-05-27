@@ -66,7 +66,7 @@ typedef struct _php_ext_lib_entry {
 	const char *dummy_filename;			/* internal filename */
 	const char *section_name;			/* The section name of the embed file*/
 	int include_on_rinit;			 	/* it allow user embed but not include, yes for future */
-	php_ext_lib_stat info;
+	php_ext_lib_stat stat;
 } php_ext_lib_entry;
 
 #define PHP_EXT_EMBED_MINIT(extname)		php_embed_startup(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
