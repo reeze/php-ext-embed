@@ -66,6 +66,7 @@ php_ext_embed_wrapper ext_embed_wrapper = {
 		NULL,
 		0 /* is_url */
 	},
+	"", /* extname will be set after install */
 	PHP_EXT_EMBED_API_NO
 };
 

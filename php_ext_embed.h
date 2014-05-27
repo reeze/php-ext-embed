@@ -46,6 +46,7 @@
  */
 typedef struct _php_ext_embed_wrapper {
 	php_stream_wrapper wraper;	/* should be the first */
+	const char *extname;		/* for debugging */
 	int api_no;					/* to detect future possible incompatible if we change api */
 	HashTable embeded_entries;	/* used to improve speed for entry lookup */
 } php_ext_embed_wrapper;
