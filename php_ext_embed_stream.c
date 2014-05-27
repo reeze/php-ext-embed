@@ -175,6 +175,7 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 			if (gelf_getshdr(scn, &ghdr) != &ghdr) {
 				goto failed_and_clean;
 			}
+			close(fd);
 			elf_end(e);
 			entry->stat.offset = ghdr.sh_offset;
 			entry->stat.size = ghdr.sh_size;
