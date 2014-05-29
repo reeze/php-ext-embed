@@ -116,7 +116,8 @@ int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRML
 	php_ext_embed_wrapper *wrapper;
 	wrapper = (php_ext_embed_wrapper *)find_registered_wrapper();
 
-	if (wrapper) {
+	// cleanup by yourself
+	if (wrapper && strcmp(extname, wrapper->extname) == 0) {
 		php_unregister_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME TSRMLS_CC);
 	}
 
