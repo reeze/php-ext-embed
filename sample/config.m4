@@ -9,7 +9,7 @@ PHP_ARG_WITH(sample, for sample support,
 
 if test "$PHP_SAMPLE" != "no"; then
   dnl check dependencies
-  PHP_EXT_EMBED_INIT()
+  PHP_EXT_EMBED_INIT(sample)
   
   PHP_SUBST(SAMPLE_SHARED_LIBADD)
 
