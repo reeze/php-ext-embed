@@ -69,9 +69,6 @@ typedef struct _php_ext_lib_entry {
 	php_ext_lib_stat stat;
 } php_ext_lib_entry;
 
-/* extension generated libs */
-#include "php_ext_embed_libs.h"
-
 #define PHP_EXT_EMBED_MINIT(extname)		php_embed_startup(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 #define PHP_EXT_EMBED_RINIT(extname)		php_embed_rinit(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 #define PHP_EXT_EMBED_RSHUTDOWN(extname)	php_embed_rshutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
