@@ -25,8 +25,8 @@
 #include <php.h>
 #include <ext/standard/info.h>
 
+/* php ext embed header */
 #include "php_ext_embed.h"
-#include "php_ext_embed_libs.h"
 
 #include "php_sample.h"
 
@@ -77,6 +77,7 @@ PHP_RINIT_FUNCTION(sample)
 PHP_RSHUTDOWN_FUNCTION(sample)
 {
 	PHP_EXT_EMBED_RSHUTDOWN(sample);
+
 	return SUCCESS;
 }
 
@@ -96,7 +97,7 @@ PHP_MSHUTDOWN_FUNCTION(sample)
 {
 	PHP_EXT_EMBED_MSHUTDOWN(sample);
 
-    return SUCCESS;
+	return SUCCESS;
 }
 /* }}} */
 
