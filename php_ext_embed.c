@@ -27,12 +27,12 @@ extern int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entr
 static php_ext_embed_wrapper* find_registered_wrapper()
 {
 	const HashTable *wrappers = php_stream_get_url_stream_wrappers_hash_global();
-	php_ext_embed_wrapper *wrapper = NULL;
+	php_ext_embed_wrapper **wrapperpp = NULL;
 
 	zend_hash_find(wrappers, (char *)PHP_EXT_EMBED_PROTO_NAME,
-		sizeof(PHP_EXT_EMBED_PROTO_NAME), (void **)&wrapper);
+		sizeof(PHP_EXT_EMBED_PROTO_NAME), (void **)&wrapperpp);
 
-	return wrapper;
+	return wrapperpp ? *wrapperpp : NULL;
 }
 
 /*
@@ -47,22 +47,30 @@ int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS
 	if (!wrapper) {
 		wrapper = &ext_embed_wrapper;
 		wrapper->extname = extname;
-		zend_hash_init(&wrapper->embeded_entries, 0, NULL, NULL, 1);
+		zend_hash_init(&wrapper->embeded_entries, 0, NULL, NULL, 8);
 		int ret = php_register_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME,
-			(php_stream_wrapper *)&ext_embed_wrapper TSRMLS_CC);
+			(php_stream_wrapper *)wrapper TSRMLS_CC);
 
 		if (ret == FAILURE) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed to startup php-ext-embed:"
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed to startup php-ext-embed: "
 				"Failed to register extension-embed stream wrapper to PHP");
 			return FAILURE;
 		}
 	} else {
 		php_error_docref(NULL TSRMLS_CC, E_NOTICE, PHP_EXT_EMBED_PROTO_NAME
-			" wrapper have been registered by extension: %s", extname);
+			" wrapper have been registered by extension: %s. reuse it", extname);
 	}
 
 	/* merge embeded libs to php global wrapper instance to speedup lookup */
 	ENTRY_FOREACH(embed_files, entry) {
+		void *dummy = NULL;
+		if (zend_hash_find(&wrapper->embeded_entries, (char *)entry->dummy_filename,
+					strlen(entry->dummy_filename) + 1, &dummy) == SUCCESS) {
+			entry->include_on_rinit = 0;
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Duplicate lib detected ignored, lib: %s", entry->dummy_filename);
+			continue;
+		}
+
 		if (php_ext_embed_init_entry(&wrapper->embeded_entries, entry) == SUCCESS) {
 			zend_hash_add(&wrapper->embeded_entries, entry->dummy_filename,
 					strlen(entry->dummy_filename) + 1, &entry, sizeof(entry), NULL);
@@ -117,7 +125,7 @@ int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRML
 	wrapper = (php_ext_embed_wrapper *)find_registered_wrapper();
 
 	// cleanup by yourself
-	if (wrapper && strcmp(extname, wrapper->extname) == 0) {
+	if (wrapper && wrapper->extname && strcmp(extname, wrapper->extname) == 0) {
 		php_unregister_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME TSRMLS_CC);
 	}
 
