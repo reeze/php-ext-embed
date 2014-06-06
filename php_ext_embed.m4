@@ -132,7 +132,7 @@ AC_DEFUN([PHP_EXT_CHECK_LIBELF],[
 ])
 
 dnl
-dnl PHP_EXT_EMBED_ADD_LIB(extname, sources)
+dnl PHP_EXT_EMBED_ADD_INCLUDE_LIB(extname, sources)
 dnl
 dnl Includes php lib to extension
 dnl
