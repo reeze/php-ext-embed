@@ -53,7 +53,7 @@ int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS
 	if (!wrapper) {
 		wrapper = &ext_embed_wrapper;
 		wrapper->extname = extname;
-		zend_hash_init(&wrapper->embeded_entries, 0, NULL, NULL, 8);
+		zend_hash_init(&wrapper->embeded_entries, 8, NULL, NULL, 1);
 		int ret = php_register_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME,
 			(php_stream_wrapper *)wrapper TSRMLS_CC);
 
