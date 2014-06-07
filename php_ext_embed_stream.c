@@ -148,6 +148,7 @@ int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entr
 
 	int fd = open(bin_path, O_RDONLY, 0);
 	if (fd < 0) {
+		TSRMLS_FETCH();
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "failed to open so file: %s"
 			" please make sure your so file named as ${extname}.so", bin_path);
 		return FAILURE;
