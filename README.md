@@ -80,6 +80,7 @@ Or all in one diff: <https://github.com/reeze/php-ext-embed/commit/3d5a8bab58ffe
 
     ```
     m4_include(php-ext-embed/php_ext_embed.m4)
+	PHP_EXT_EMBED_INIT(sample)
     ```
 
 
