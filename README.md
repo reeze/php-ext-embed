@@ -51,6 +51,14 @@ quick view at our sample extension.
 
 Or you could add those lines to your files yourself.
 
+You can refer to
+[sample.c](https://github.com/reeze/php-ext-embed/blob/master/sample/sample.c)
+and
+[config.m4](https://github.com/reeze/php-ext-embed/blob/master/sample/config.m4)
+in sample/ directory for example.
+
+Or all in one diff: <https://github.com/reeze/php-ext-embed/commit/3d5a8bab58ffe2d10c465ba4a671e1b89be3b2f3>
+
 1. Add include instructions to your main file of extension at the top.
 
     ```
@@ -73,12 +81,6 @@ Or you could add those lines to your files yourself.
     ```
     m4_include(php-ext-embed/php_ext_embed.m4)
     ```
-
-You can also refer to
-[sample.c](https://github.com/reeze/php-ext-embed/blob/master/sample/sample.c)
-and
-[config.m4](https://github.com/reeze/php-ext-embed/blob/master/sample/config.m4)
-in sample/ directory for example.
 
 
 ## Dependency

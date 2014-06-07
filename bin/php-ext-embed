@@ -65,8 +65,8 @@ mkdir -p lib
 echo "<?php
 
 # sample php lib, you could define fuctions and classes
-# please notice the lib WILL not get executed, only functions 
-# and classes will be imported
+# please notice the lib WILL *NOT* been get executed, only functions 
+# and classes will be imported, other code will be ignore (The same behavior as HHVM)
 
 # please add our own logic here...
 " > lib/sample.inc.php
