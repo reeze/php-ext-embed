@@ -16,10 +16,16 @@
    +----------------------------------------------------------------------+
 */
 
+/* $Id$ */
+
 #include <php.h>
 #include <Zend/zend_compile.h>
 
 #include "php_ext_embed.h"
+
+#define ENTRY_FOREACH(embed_files, entry) \
+	php_ext_lib_entry *entry = NULL; \
+	for (entry = embed_files; entry->filename != NULL; (embed_files++), entry = embed_files)
 
 extern php_ext_embed_wrapper ext_embed_wrapper;
 extern int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry);

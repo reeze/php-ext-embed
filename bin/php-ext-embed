@@ -1,17 +1,117 @@
 #!/bin/sh
 
+## A script to help you upgrade your extension to support embed phplib
+
 ACTION=$1
 
+function die()
+{
+	echo "$*"
+	exit -1
+}
+
 if [[ "$ACTION" == "" ]]; then
-	echo "Usage: $0 [new|upgrad] params"
-	echo "	- new extension-name			generate a new extension which enabled with embedable lib"
+	echo "Usage: $0 upgrade [path/to/your/ext]"
 	echo "	- upgrade extension-path		upgrade your extension to enable embedable lib"
 
 	exit 1
 fi
 
-if [[ "$ACTION" == "new" ]]; then
-	echo "TODO"
-else
-	echo "TODO"
+if [[ "$ACTION" != "upgrade" ]]; then
+	die "Unknow command: $ACTION"
 fi
+
+EXTENSION_PATH=`pwd`
+
+CONFIG_FILE=$EXTENSION_PATH/config.m4
+if [[ ! -f $CONFIG_FILE ]]; then
+	die "Can not find config.m4 file $CONFIG_FILE is not exist " \
+		"please make sure extension path: $EXTENSION_PATH is correct"
+fi
+
+# ------------ Find extension name --------------
+EXTNAME=`grep 'NEW_EXTENSION(' $CONFIG_FILE  | tail -n 1 \
+	| awk -F "(" '{print $2}' | awk -F"," '{print $1}'`
+
+echo "Found extension: $extname"
+
+grep PHP_EXT_EMBED_NEW_EXTENSION $CONFIG_FILE 2>&1 > /dev/null
+if [[ $? == 0 ]]; then
+	die "Your extension have been upgraded before. exiting..."
+fi
+
+echo "---------- start upgrading -------------"
+
+echo "- step 1: upgrade config.m4"
+
+cp config.m4 config.m4.bak
+
+sed -e '/NEW_EXTENSION/ i\ 
+  m4_include(php-ext-embed/php_ext_embed.m4)\
+  PHP_EXT_EMBED_INIT(__EXTNAME__)\
+  \
+  dnl you could update it for your own need\
+  PHP_EXT_EMBED_ADD_INCLUDE_LIB(__EXTNAME__, [lib/*.php])\
+  \
+' config.m4 > config.m4.tmp1
+
+sed -e "s/__EXTNAME__/$EXTNAME/g" config.m4.tmp1 > config.m4.tmp2
+sed -e "s/PHP_NEW_EXTENSION/PHP_EXT_EMBED_NEW_EXTENSION/g" config.m4.tmp2 > config.m4
+
+rm config.m4.tmp1 config.m4.tmp2
+
+mkdir -p lib
+
+echo "<?php
+
+# sample php lib, you could define fuctions and classes
+# please notice the lib WILL not get executed, only functions 
+# and classes will be imported
+
+# please add our own logic here...
+" > lib/sample.inc.php
+
+echo "- step 1 DONE update config.m4"
+
+echo "- step 2 update source code"
+
+MAIN_FILE=`grep -HR "PHP_MINIT_FUNCTION($EXTNAME" * | awk -F ":" '{print $1}' | grep '\.[c|cpp]$' | head -n 1`
+
+echo "- going to update $MAIN_FILE"
+cp -f $MAIN_FILE $MAIN_FILE.bak
+
+# Add headers
+sed '1,/#include.*php*/{/#include.*php*/ i\ 
+#include "php_ext_embed.h"\
+#include "php_ext_embed_libs.h"\
+\
+
+}' $MAIN_FILE > $MAIN_FILE.tmp && mv $MAIN_FILE.tmp $MAIN_FILE
+
+# Add hooks
+sed -e '/PHP_MINIT_FUNCTION(/,/{/ { /{/ a\ 
+PHP_EXT_EMBED_MINIT(__EXTNAME__);\
+
+}' $MAIN_FILE > $MAIN_FILE.tmp && mv $MAIN_FILE.tmp $MAIN_FILE
+
+sed -e '/PHP_MSHUTDOWN_FUNCTION(/,/{/ { /{/ a\ 
+PHP_EXT_EMBED_MSHUTDOWN(__EXTNAME__);\
+
+}' $MAIN_FILE > $MAIN_FILE.tmp && mv $MAIN_FILE.tmp $MAIN_FILE
+
+sed -e '/PHP_RINIT_FUNCTION(/,/{/ { /{/ a\ 
+PHP_EXT_EMBED_RINIT(__EXTNAME__);\
+
+}' $MAIN_FILE > $MAIN_FILE.tmp && mv $MAIN_FILE.tmp $MAIN_FILE
+
+sed -e '/PHP_RSHUTDOWN_FUNCTION(/,/{/ { /{/ a\ 
+PHP_EXT_EMBED_RSHUTDOWN(__EXTNAME__);\
+
+}' $MAIN_FILE > $MAIN_FILE.tmp && mv $MAIN_FILE.tmp $MAIN_FILE
+
+sed -e "s/__EXTNAME__/$EXTNAME/g" $MAIN_FILE > $MAIN_FILE.tmp && mv $MAIN_FILE.tmp $MAIN_FILE
+
+rm -f $MAIN_FILE.tmp
+
+echo "Update finished"
+echo "Please edit config.m4 file to add your libs"

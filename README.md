@@ -8,13 +8,13 @@ Build Status:
 
 ## What it is
 
-**Mixed-language programming with PHP and C!**
-
 php-ext-embed is a tool to help you embed sections of PHP script right into your
 php extension (which produced as `*.so` file, written in C).
 
 
-## Why should I use
+## Why should I use it
+
+**Mixed-language programming with PHP and C!**
 
 The  reason  why we are writing PHP extensions is simple - improving performance
 by  implementing  critical  algorithms in C under the most of circumstances, but
@@ -41,27 +41,16 @@ quick view at our sample extension.
 1. make.
 1. Now  the extension file is built at sample/modules/sample.so, add an entry in
    `php.ini` and try it out.
-1. Update scripts in sample/lib/\*.php files to test.
-
-### Generate new extension from scratch
-
-1. Download php-ext-embed
-1. generate your extension skeleton
-
-> The util script is not finished yet
-
-```
-$ cd php-ext-embed
-$ bin/php-ext-embed new extension-name
-$ cd myext
-$ # add your logic
-```
+1. Update scripts in sample/lib/\*.php files and `make` to test.
 
 ### Upgrade from your exist extension
 
-Only 7 additional lines is needed in your extension.
-
 1. Copy folder of this project to your extension root path.
+1. execute `php-ext-embed/bin/php-ext-embed upgrade`, it will update your
+   files automaticly
+
+Or you could add those lines to your files yourself.
+
 1. Add include instructions to your main file of extension at the top.
 
     ```
@@ -90,8 +79,6 @@ You can also refer to
 and
 [config.m4](https://github.com/reeze/php-ext-embed/blob/master/sample/config.m4)
 in sample/ directory for example.
-
-A script to help you upgrade is coming soon.
 
 
 ## Dependency

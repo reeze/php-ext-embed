@@ -21,10 +21,11 @@
 #ifndef _PHP_EXT_EMBED_H_
 #define _PHP_EXT_EMBED_H_
 
-
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
+
+#include <php.h>
 
 #define PHP_EXT_EMBED_VERSION		"1.0.0"
 #define PHP_EXT_EMBED_API_NO		10000
@@ -34,10 +35,6 @@
 #if PHP_MAJOR_VERSION == 4 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION < 2)
 #error "php_ext_embed only supports PHP 5.2 and higher"
 #endif
-
-#define ENTRY_FOREACH(embed_files, entry) \
-	php_ext_lib_entry *entry = NULL; \
-	for (entry = embed_files; entry->filename != NULL; (embed_files++), entry = embed_files)
 
 /*
  * PHP-Ext-Embed register a internal php wrapper to
@@ -64,11 +61,15 @@ typedef struct _php_ext_lib_entry {
 	const char *extname;
 	const char *filename;				/* relative filename */
 	const char *dummy_filename;			/* internal filename */
-	const char *section_name;			/* The section name of the embed file*/
+	const char *section_name;			/* the section name of the embed file in so */
 	int include_on_rinit;			 	/* it allow user embed but not include, yes for future */
-	php_ext_lib_stat stat;
+	php_ext_lib_stat stat;				/* basic info for entry */
 } php_ext_lib_entry;
 
+/* 
+ * the same naming conversion as your entension, please put the corresponding
+ * macro to your extension
+ */
 #define PHP_EXT_EMBED_MINIT(extname)		php_embed_startup(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 #define PHP_EXT_EMBED_RINIT(extname)		php_embed_rinit(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 #define PHP_EXT_EMBED_RSHUTDOWN(extname)	php_embed_rshutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
