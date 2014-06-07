@@ -83,6 +83,8 @@ static php_ext_lib_entry* get_entry_from_path(HashTable *embeded_entries, const 
 static void get_bin_path(php_ext_lib_entry *entry, char *buf)
 {
 	// Only dynamic shared object supported for now
+	// XXX it assume the extension path is ${extname}.so so
+	// so you have to name your extension as the rule
 	snprintf(buf, MAXPATHLEN, "%s/%s.so", INI_STR("extension_dir"), entry->extname);
 }
 
