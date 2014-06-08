@@ -45,7 +45,7 @@ static php_ext_embed_wrapper* find_registered_wrapper()
  * Register 'extension-embed' stream wrapper, then we could transpantly load php
  * lib file without need to mannually cache classes/functions to improve speed
  */
-int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
+int php_embed_minit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_embed_wrapper *wrapper;
 	wrapper = (php_ext_embed_wrapper *)find_registered_wrapper();
@@ -125,7 +125,7 @@ int php_embed_rshutdown(const char *extname, php_ext_lib_entry *embed_files TSRM
 	return SUCCESS;
 }
 
-int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
+int php_embed_mshutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
 	php_ext_embed_wrapper *wrapper;
 	wrapper = (php_ext_embed_wrapper *)find_registered_wrapper();

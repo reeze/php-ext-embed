@@ -70,14 +70,14 @@ typedef struct _php_ext_lib_entry {
  * the same naming conversion as your entension, please put the corresponding
  * macro to your extension
  */
-#define PHP_EXT_EMBED_MINIT(extname)		php_embed_startup(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
+#define PHP_EXT_EMBED_MINIT(extname)		php_embed_minit(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 #define PHP_EXT_EMBED_RINIT(extname)		php_embed_rinit(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 #define PHP_EXT_EMBED_RSHUTDOWN(extname)	php_embed_rshutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
-#define PHP_EXT_EMBED_MSHUTDOWN(extname)	php_embed_shutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
+#define PHP_EXT_EMBED_MSHUTDOWN(extname)	php_embed_mshutdown(#extname, ext_ ## extname ## _embed_files TSRMLS_CC)
 
-int php_embed_startup(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
+int php_embed_minit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 int php_embed_rinit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 int php_embed_rshutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
-int php_embed_shutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
+int php_embed_mshutdown(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC);
 
 #endif
