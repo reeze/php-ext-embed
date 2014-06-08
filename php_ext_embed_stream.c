@@ -73,11 +73,9 @@ php_ext_embed_wrapper ext_embed_wrapper = {
 static php_ext_lib_entry* get_entry_from_path(HashTable *embeded_entries, const char *path)
 {
 	php_ext_lib_entry **entry = NULL;
-	if (zend_hash_find(embeded_entries, (char *)path, strlen(path) + 1, (void **)&entry) == SUCCESS) {
-		return *entry;
-	}
+	zend_hash_find(embeded_entries, (char *)path, strlen(path) + 1, (void **)&entry);
 
-	return NULL;
+	return entry ? *entry : NULL;
 }
 
 static void get_bin_path(php_ext_lib_entry *entry, char *buf)
@@ -330,6 +328,6 @@ php_stream *php_stream_ext_embed_opener(php_stream_wrapper *wrapper,
 		*opened_path = estrdup(path);
 	}
 
-	return stream ? stream : NULL;
+	return stream;
 }
 /* }}} */
