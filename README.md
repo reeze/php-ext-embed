@@ -2,7 +2,7 @@ php-ext-embed
 =============
 
 Build Status:
-[![Build Status](https://secure.travis-ci.org/reeze/php-ext-embed.png)]
+[![Build Status](https://secure.travis-ci.org/reeze/php-ext-embed.svg)]
 (http://travis-ci.org/reeze/php-ext-embed)
 
 
