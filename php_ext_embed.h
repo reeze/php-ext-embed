@@ -27,13 +27,19 @@
 
 #include <php.h>
 
-#define PHP_EXT_EMBED_VERSION		"1.0.0"
+#define PHP_EXT_EMBED_VERSION		"1.0.1"
 #define PHP_EXT_EMBED_API_NO		10000
 
 #define PHP_EXT_EMBED_PROTO_NAME	"extension-embed"
 
 #if PHP_MAJOR_VERSION == 4 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION < 2)
 #error "php_ext_embed only supports PHP 5.2 and higher"
+#endif
+
+#ifdef PHP_EXT_EMBED_DEBUG
+#define EMBED_DBG(args...) php_error_docref(NULL TSRMLS_CC, E_WARNING, "DEBUG: " ##args)
+#else
+#define EMBED_DBG(args...)
 #endif
 
 /*

@@ -73,7 +73,8 @@ int php_embed_minit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_D
 		if (zend_hash_find(&wrapper->embeded_entries, (char *)entry->dummy_filename,
 					strlen(entry->dummy_filename) + 1, &dummy) == SUCCESS) {
 			entry->include_on_rinit = 0;
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Duplicate lib detected ignored, lib: %s", entry->dummy_filename);
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+				"Duplicate lib detected ignored, lib: %s", entry->dummy_filename);
 			continue;
 		}
 
@@ -81,7 +82,8 @@ int php_embed_minit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_D
 			zend_hash_add(&wrapper->embeded_entries, entry->dummy_filename,
 					strlen(entry->dummy_filename) + 1, &entry, sizeof(entry), NULL);
 		} else {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed to init lib: %s", entry->dummy_filename);
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+				"Failed to init lib: %s", entry->dummy_filename);
 		}
 	}
 
