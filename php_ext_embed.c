@@ -94,8 +94,11 @@ static int php_embed_do_include_files(const char *extname, php_ext_lib_entry *em
 {
 	ENTRY_FOREACH(embed_files, entry) {
 		if (!entry->include_on_rinit) {
+			EMBED_DBG("ignore not include file: %s", entry->dummy_filename);
 			continue;
 		}
+
+		EMBED_DBG("do include file: %s", entry->dummy_filename);
 
 		zend_file_handle file_handle;
 
@@ -134,7 +137,10 @@ int php_embed_mshutdown(const char *extname, php_ext_lib_entry *embed_files TSRM
 
 	// cleanup by yourself
 	if (wrapper && wrapper->extname && strcmp(extname, wrapper->extname) == 0) {
+		EMBED_DBG("Unregister stream wrapper by :%s", extname);
 		php_unregister_url_stream_wrapper(PHP_EXT_EMBED_PROTO_NAME TSRMLS_CC);
+	} else {
+		EMBED_DBG("extension: %s do not own the wrapper ignored", extname);
 	}
 
 	return SUCCESS;

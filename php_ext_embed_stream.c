@@ -84,6 +84,8 @@ static void get_bin_path(php_ext_lib_entry *entry, char *buf)
 	// XXX it assume the extension path is ${extname}.so so
 	// so you have to name your extension as the rule
 	snprintf(buf, MAXPATHLEN, "%s/%s.so", INI_STR("extension_dir"), entry->extname);
+
+	EMBED_DBG("entry path: %s", buf);
 }
 
 static ssize_t read_entry_data(php_ext_lib_entry *entry, size_t offset, char *buf, size_t size)
