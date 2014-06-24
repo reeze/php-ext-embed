@@ -104,7 +104,10 @@ static ssize_t read_entry_data(php_ext_lib_entry *entry, size_t offset, char *bu
 
 	lseek(fd, entry->stat.offset + offset, SEEK_SET);
 
-	return read(fd, buf, read_len);
+	ssize_t nread = read(fd, buf, read_len);
+	close(fd);
+
+	return nread;
 }
 
 int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry)

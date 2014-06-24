@@ -1,6 +1,10 @@
 PHP                                                                        NEWS
 |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
+06 24 2014, PHP-Ext-Embed 1.0.1
+
+- [FIX] Fixed fd leaks which cause php-fpm return 404
+
 06 07 2014, PHP-Ext-Embed 1.0.0 
 
 - First Release
