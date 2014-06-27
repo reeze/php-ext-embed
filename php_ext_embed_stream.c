@@ -92,6 +92,7 @@ static ssize_t read_entry_data(php_ext_lib_entry *entry, size_t offset, char *bu
 {
 	char bin_path[MAXPATHLEN];
 	int fd = -1;
+	ssize_t nbytes = -1;
 
 	size_t read_len = ((entry->stat.size - offset > size) ? size : (entry->stat.size - offset));
 
@@ -104,10 +105,10 @@ static ssize_t read_entry_data(php_ext_lib_entry *entry, size_t offset, char *bu
 
 	lseek(fd, entry->stat.offset + offset, SEEK_SET);
 
-	ssize_t nread = read(fd, buf, read_len);
+	nbytes = read(fd, buf, read_len);
 	close(fd);
 
-	return nread;
+	return nbytes;
 }
 
 int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry)
