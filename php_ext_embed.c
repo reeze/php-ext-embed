@@ -45,8 +45,9 @@ static php_ext_embed_wrapper* find_registered_wrapper()
  * Register 'extension-embed' stream wrapper, then we could transpantly load php
  * lib file without need to mannually cache classes/functions to improve speed
  *
- * FIXME opcode cache: eacc/opcache close the door, i mean it didn't work for now
- *       sad... I will try to find a better way.
+ * FIXME opcode cache: some version of eacc/opcache only cache stream file://
+ *                     we use a custom stream, so the opcache may not work,
+ *                     but you can still use it, just without opcache :(
  */
 int php_embed_minit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
