@@ -1,6 +1,5 @@
 php-ext-embed
 =============
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/reeze/php-ext-embed?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Build Status:
 [![Build Status](https://secure.travis-ci.org/reeze/php-ext-embed.svg)]
