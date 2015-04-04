@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Embeddable Ext                                                   |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2014 The PHP Group                                |
+   | Copyright (c) 1997-2015 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -47,9 +47,9 @@ static php_ext_embed_wrapper* find_registered_wrapper()
  * Register 'extension-embed' stream wrapper, then we could transpantly load php
  * lib file without need to mannually cache classes/functions to improve speed
  *
- * FIXME opcode cache: some version of eacc/opcache only cache stream file://
- *                     we use a custom stream, so the opcache may not work,
- *                     but you can still use it, just without opcache :(
+ * FIXME opcode cache: some version of eacc/opcache only cache stream `file://`
+ *                     we use a custom stream, so the opcache are not work,
+ *                     but you can still use it, or you could enable it by update eacc/opcache
  */
 int php_embed_minit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_DC)
 {
@@ -114,7 +114,10 @@ static int php_embed_do_include_files(const char *extname, php_ext_lib_entry *em
 		file_handle.free_filename = 0;
 		file_handle.opened_path = NULL;
 
-		/* We just compile it to import class & function for now */
+		/*
+		 * We just compile it to import class & function for now, so this means your code
+		 * will not get executed, you can only declear top level classes & functions.
+		 */
 		zend_op_array *op_array = zend_compile_file(&file_handle, ZEND_INCLUDE TSRMLS_CC);
 
 		if (op_array != NULL) {

@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Embedable Ext                                                    |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2014 The PHP Group                                |
+   | Copyright (c) 1997-2015 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -43,7 +43,7 @@
 #endif
 
 /*
- * PHP-Ext-Embed register a internal php wrapper to
+ * PHP-Ext-Embed register a internal php stream wrapper to
  * load php lib from binary. This make the libs can take
  * advantage of opcache extension, eg: apc, opcache...
  */
