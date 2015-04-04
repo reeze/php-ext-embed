@@ -23,9 +23,11 @@
 
 #include "php_ext_embed.h"
 
-#define ENTRY_FOREACH(embed_files, entry) \
+#define ENTRY_FOREACH(embed_files, entry) do { \
 	php_ext_lib_entry *entry = NULL; \
 	for (entry = embed_files; entry->filename != NULL; (embed_files++), entry = embed_files)
+
+#define END_ENTRY_FOREACH() } while(0)
 
 extern php_ext_embed_wrapper ext_embed_wrapper;
 extern int php_ext_embed_init_entry(HashTable *embeded_entries, php_ext_lib_entry *entry);
@@ -89,7 +91,7 @@ int php_embed_minit(const char *extname, php_ext_lib_entry *embed_files TSRMLS_D
 			php_error_docref(NULL TSRMLS_CC, E_WARNING,
 				"Failed to init lib: %s", entry->dummy_filename);
 		}
-	}
+	} END_ENTRY_FOREACH();
 
 	return SUCCESS;
 }
@@ -119,7 +121,7 @@ static int php_embed_do_include_files(const char *extname, php_ext_lib_entry *em
 			destroy_op_array(op_array TSRMLS_CC);
 			efree(op_array);
 		}
-	}
+	} END_ENTRY_FOREACH();
 
 	return SUCCESS;
 }
