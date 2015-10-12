@@ -171,7 +171,7 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIB],[
     if test -f "$ac_src"; then
       dummy_filename="extension-embed://$1/$ac_src"
       section_name=ext.`echo $dummy_filename | $MD5_CMD`
-      section_name=`echo -n $section_name | cut -c1-16`
+      section_name=`echo $section_name | cut -c1-16`
       echo "  {"            >> $ext_embed_files_header
       echo "    \"$1\"",      >> $ext_embed_files_header
       echo "    \"$ac_src\"",      >> $ext_embed_files_header
