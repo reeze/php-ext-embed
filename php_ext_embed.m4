@@ -43,7 +43,7 @@ AC_DEFUN([PHP_EXT_EMBED_NEW_EXTENSION],[
   PHP_NEW_EXTENSION($1, [$2 $PHP_EXT_EMBED_DIR/*.c], $3, $4, $5, $6, $7)
 
   case $host_alias in
-    *linux*[)]
+    *linux* | *bsd*[)]
       dnl FIXME tricky way to add custom command after build for Linux
       echo "	objcopy $php_ext_embed_libs .libs/$1.so" >> Makefile.objects
       ;;
@@ -140,8 +140,12 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIB],[
   php_ext_upper_name=translit($1,a-z-,A-Z_)
   AC_MSG_RESULT(Generate embed files header)
 
-  if [ "$2" == "" ]; then
-  	AC_MSG_ERROR(php lib files empty, please add your libs)
+  sources="$2"
+  if test "${sources#*\/*}" != "$sources" && test ! -d ${sources%/*}; then
+    AC_MSG_ERROR([php lib path points to a directory that does not exist])
+  fi
+  if test `ls -1 $sources | wc -l` = 0; then
+    AC_MSG_ERROR([php lib files empty, please add your libs])
   fi
 
   echo "" > $ext_embed_files_header
@@ -155,7 +159,7 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIB],[
 
   php_ext_embed_libs=
   case $host_alias in
-    *darwin*[)]
+    *darwin* | *bsd*[)]
       MD5_CMD=md5
       ;;
   *[)]
@@ -163,11 +167,11 @@ AC_DEFUN([PHP_EXT_EMBED_ADD_INCLUDE_LIB],[
       ;;
   esac
 
-  for ac_src in $2; do
+  for ac_src in $sources; do
     if test -f "$ac_src"; then
       dummy_filename="extension-embed://$1/$ac_src"
       section_name=ext.`echo $dummy_filename | $MD5_CMD`
-      section_name=${section_name:0:16}
+      section_name=`echo $section_name | cut -c1-16`
       echo "  {"            >> $ext_embed_files_header
       echo "    \"$1\"",      >> $ext_embed_files_header
       echo "    \"$ac_src\"",      >> $ext_embed_files_header
